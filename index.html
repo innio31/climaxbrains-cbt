@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Climax Brains Academy - CBT Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-purple: #6a0dad;
+            --secondary-wine: #722f37;
+            --accent-gold: #d4af37;
+            --light-purple: #9c6fdc;
+            --light-wine: #a05252;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f9f3ff 0%, #f5e8f5 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary-purple), var(--secondary-wine));
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 Q50,80 0,100 Z"></path></svg>');
+            background-size: 100% 100%;
+            opacity: 0.3;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .logo {
+            height: 80px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .tagline {
+            font-style: italic;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        .main-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .welcome-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1));
+            border-left: 5px solid var(--primary-purple);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        
+        .welcome-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .welcome-card h2 {
+            color: var(--primary-purple);
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        
+        .welcome-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .mission-statement {
+            font-style: italic;
+            color: var(--secondary-wine);
+            background: rgba(114, 47, 55, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        
+        .mode-selection {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            display: inline-block;
+            background: white;
+            color: var(--primary-purple);
+            padding: 20px 40px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1));
+            border: 2px solid var(--primary-purple);
+            text-align: center;
+            min-width: 250px;
+        }
+        
+        .mode-btn:hover {
+            background: linear-gradient(to right, var(--primary-purple), var(--secondary-wine));
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(106,13,173,0.3));
+            border-color: transparent;
+        }
+        
+        .mode-btn i {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .mode-btn h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+        
+        .mode-btn p {
+            margin: 0;
+            font-weight: normal;
+            font-size: 1rem;
+        }
+        
+        .practice-btn {
+            border-color: var(--primary-purple);
+            color: var(--primary-purple);
+        }
+        
+        .exam-btn {
+            border-color: var(--secondary-wine);
+            color: var(--secondary-wine);
+        }
+        
+        .practice-btn:hover {
+            background: linear-gradient(to right, var(--primary-purple), var(--light-purple));
+        }
+        
+        .exam-btn:hover {
+            background: linear-gradient(to right, var(--secondary-wine), var(--light-wine));
+        }
+        
+        /* Slideshow styles */
+        .slideshow-container {
+            max-width: 800px;
+            position: relative;
+            margin: 2rem auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15));
+        }
+        
+        .slide {
+            display: none;
+            width: 100%;
+        }
+        
+        .slide img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+        
+        @keyframes fade {
+            from {opacity: .4}
+            to {opacity: 1}
+        }
+        
+        .floating-icons {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            opacity: 0.1;
+            color: var(--primary-purple);
+            font-size: 24px;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(to right, var(--primary-purple), var(--secondary-wine));
+            color: white;
+            margin-top: 2rem;
+        }
+        
+        .footer p {
+            margin: 0;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .mode-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .slide img {
+                height: 250px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="floating-icons" id="floatingIcons"></div>
+    
+    <header class="header animate__animated animate__fadeIn">
+        <div class="logo-container">
+            <img src="school-logo.png" alt="The Climax Model Schools Logo" class="logo">
+            <h1>The Climax Brains Academy, Ota</h1>
+            <p class="tagline"> Raising Champions</p>
+        </div>
+        <h2>Computer-Based Test Portal</h2>
+    </header>
+    
+    <div class="main-container">
+        <div class="welcome-card animate__animated animate__fadeInUp">
+            <h2>Welcome to Our CBT Portal</h2>
+            <div class="welcome-message">
+                <p>Dear valued students, welcome to The Climax Brains Academy's Computer-Based Test platform. We're thrilled to provide you with this modern assessment tool designed to enhance your learning experience and prepare you for the digital future.</p>
+                
+                <div class="mission-statement">
+                    "At Climax Brains Academy, we're committed to nurturing intellectual curiosity and academic excellence through innovative teaching methods and cutting-edge technology."
+                </div>
+                
+                <p>Our CBT portal offers a seamless testing experience that combines the rigor of traditional examinations with the convenience and efficiency of digital technology. This platform reflects our dedication to your academic success and our commitment to staying at the forefront of educational innovation.</p>
+                
+                <p>Whether you're here to practice or take an official examination, we encourage you to approach this experience with confidence and focus. Our system is designed to be intuitive and user-friendly, allowing you to concentrate on demonstrating your knowledge.</p>
+            </div>
+            
+            <h3>Choose Your Mode to Begin</h3>
+        </div>
+        
+        <div class="mode-selection animate__animated animate__fadeInUp animate__delay-1s">
+            <a href="practice.html" class="mode-btn practice-btn">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Practice Mode</h3>
+                <p>Test your knowledge with unlimited practice questions and immediate feedback</p>
+            </a>
+            <a href="exam.html" class="mode-btn exam-btn">
+                <i class="fas fa-file-alt"></i>
+                <h3>Exam Mode</h3>
+                <p>Take official timed examinations with proctored results</p>
+            </a>
+        </div>
+        
+        <!-- Slideshow container -->
+        <div class="slideshow-container animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="slide fade">
+                <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Students taking CBT exams">
+                <div class="slide-caption">Our students engaging with the CBT system</div>
+            </div>
+            
+            <div class="slide fade">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Modern computer lab">
+                <div class="slide-caption">State-of-the-art computer lab facilities</div>
+            </div>
+            
+            <div class="slide fade">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Students collaborating">
+                <div class="slide-caption">Preparing students for the digital future</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2025 The Climax Brains Academy, Ota. All Rights Reserved.</p>
+        <p>Powered by <a href="https://digskills.netlify.app" target="_blank" rel="noopener noreferrer" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">DigSkills</a></p>
+    </footer>
+
+    <script>
+        // Create floating icons
+        const icons = ['📚', '✏️', '📝', '🧮', '🔬', '📖', '🧪', '📊', '📓', '📌'];
+        const floatingIcons = document.getElementById('floatingIcons');
+        
+        for (let i = 0; i < 20; i++) {
+            const icon = document.createElement('div');
+            icon.className = 'floating-icon';
+            icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+            icon.style.left = `${Math.random() * 100}%`;
+            icon.style.top = `${Math.random() * 100}%`;
+            icon.style.animationDuration = `${10 + Math.random() * 20}s`;
+            icon.style.animationDelay = `${Math.random() * 5}s`;
+            floatingIcons.appendChild(icon);
+        }
+        
+        // Slideshow functionality
+        let slideIndex = 0;
+        showSlides();
+        
+        function showSlides() {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 5000); // Change image every 5 seconds
+        }
+    </script>
+</body>
+</html>

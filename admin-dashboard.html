@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Climax CBT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-purple: #6a0dad;
+            --secondary-wine: #722f37;
+            --accent-gold: #d4af37;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logout-btn {
+            background: var(--secondary-wine);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-purple);
+            font-weight: bold;
+            color: var(--primary-purple);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f9f9f9;
+            color: var(--secondary-wine);
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            background: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .btn-export {
+            background: var(--accent-gold);
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .filters {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 style="color: var(--primary-purple);">
+                <i class="fas fa-user-shield"></i> Climax CBT Admin Dashboard
+            </h1>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </header>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="students">Students</div>
+            <div class="tab" data-tab="results">Exam Results</div>
+            <div class="tab" data-tab="grading">Theory Grading</div>
+        </div>
+        
+        <!-- Students Tab -->
+        <div id="students" class="tab-content active">
+            <h2>Student Management</h2>
+            <button class="btn" id="addStudentBtn">
+                <i class="fas fa-user-plus"></i> Add New Student
+            </button>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Filter by Class</label>
+                    <select id="classFilter" class="form-control">
+                        <option value="">All Classes</option>
+                        <option value="JSS1">JSS 1</option>
+                        <option value="JSS2">JSS 2</option>
+                        <option value="JSS3">JSS 3</option>
+                        <option value="SS1">SS 1</option>
+                        <option value="SS2">SS 2</option>
+                        <option value="SS3">SS 3</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Search</label>
+                    <input type="text" id="studentSearch" class="form-control" placeholder="Search by name or exam number">
+                </div>
+            </div>
+            
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>Exam Number</th>
+                        <th>Full Name</th>
+                        <th>Class</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsList">
+                    <!-- Students will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Results Tab -->
+        <div id="results" class="tab-content">
+            <h2>Exam Results</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Class</label>
+                    <select id="resultClassFilter" class="form-control">
+                        <option value="">All Classes</option>
+                        <option value="JSS1">JSS 1</option>
+                        <option value="JSS2">JSS 2</option>
+                        <option value="JSS3">JSS 3</option>
+                        <option value="SS1">SS 1</option>
+                        <option value="SS2">SS 2</option>
+                        <option value="SS3">SS 3</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Subject</label>
+                    <select id="subjectFilter" class="form-control">
+                        <option value="">All Subjects</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="English">English</option>
+                        <option value="Physics">Physics</option>
+                        <!-- Add more subjects -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Term</label>
+                    <select id="termFilter" class="form-control">
+                        <option value="">All Terms</option>
+                        <option value="1st">Summer Coaching</option>
+                        <option value="1st">First Term</option>
+                        <option value="2nd">Second Term</option>
+                        <option value="3rd">Third Term</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn btn-export" id="exportResultsBtn">
+                <i class="fas fa-download"></i> Export Results
+            </button>
+            
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Exam No.</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Objective</th>
+                        <th>Theory</th>
+                        <th>Total</th>
+                        <th>Term</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsList">
+                    <!-- Results will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Grading Tab -->
+        <div id="grading" class="tab-content">
+            <h2>Theory Grading</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Class</label>
+                    <select id="gradingClassFilter" class="form-control">
+                        <option value="">All Classes</option>
+                        <option value="JSS1">JSS 1</option>
+                        <option value="JSS2">JSS 2</option>
+                        <option value="JSS3">JSS 3</option>
+                        <option value="SS1">SS 1</option>
+                        <option value="SS2">SS 2</option>
+                        <option value="SS3">SS 3</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Subject</label>
+                    <select id="gradingSubjectFilter" class="form-control">
+                        <option value="">All Subjects</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="English">English</option>
+                        <option value="Physics">Physics</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="gradingStatusFilter" class="form-control">
+                        <option value="ungraded">Ungraded Only</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+            </div>
+            
+            <table id="gradingTable">
+                <thead>
+                    <tr>
+                        <th>Exam No.</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Objective</th>
+                        <th>Theory</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="gradingList">
+                    <!-- Grading entries will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Add Student Modal -->
+    <div class="modal" id="studentModal">
+        <div class="modal-content">
+            <h3>Add New Student</h3>
+            <div class="form-group">
+                <label>Exam Number</label>
+                <input type="text" id="examNumber" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Surname (Password)</label>
+                <input type="text" id="surname" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Class</label>
+                <select id="studentClass" class="form-control">
+                    <option value="JSS1">JSS 1</option>
+                    <option value="JSS2">JSS 2</option>
+                    <option value="JSS3">JSS 3</option>
+                    <option value="SS1">SS 1</option>
+                    <option value="SS2">SS 2</option>
+                    <option value="SS3">SS 3</option>
+                </select>
+            </div>
+            <button class="btn" id="saveStudentBtn">Save Student</button>
+            <button class="btn btn-danger" id="cancelStudentBtn">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Grade Theory Modal -->
+    <div class="modal" id="gradingModal">
+        <div class="modal-content">
+            <h3>Grade Theory Paper</h3>
+            <div id="gradingInfo"></div>
+            <div class="form-group">
+                <label>Theory Score (Max: 60)</label>
+                <input type="number" id="theoryScore" class="form-control" min="0" max="60">
+            </div>
+            <button class="btn" id="saveGradeBtn">Save Grade</button>
+            <button class="btn btn-danger" id="cancelGradeBtn">Cancel</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyDuKgSUZejLLveOe8oXlHo64OnCDFvwPc4",
+  authDomain: "climax-brains-academy-cbt.firebaseapp.com",
+  projectId: "climax-brains-academy-cbt",
+  storageBucket: "climax-brains-academy-cbt.firebasestorage.app",
+  messagingSenderId: "1024257040553",
+  appId: "1:1024257040553:web:3cc25d238fa378358f09b8",
+  measurementId: "G-LVDHYESXJG"
+};
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        
+        // Check authentication
+        if (sessionStorage.getItem('isAdminAuthenticated') !== 'true') {
+            window.location.href = 'admin-login.html';
+        }
+        
+        // DOM Elements
+        const logoutBtn = document.getElementById('logoutBtn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Student Management
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const studentModal = document.getElementById('studentModal');
+        const saveStudentBtn = document.getElementById('saveStudentBtn');
+        const cancelStudentBtn = document.getElementById('cancelStudentBtn');
+        const studentsList = document.getElementById('studentsList');
+        
+        // Results Management
+        const resultsList = document.getElementById('resultsList');
+        const exportResultsBtn = document.getElementById('exportResultsBtn');
+        
+        // Grading Management
+        const gradingList = document.getElementById('gradingList');
+        const gradingModal = document.getElementById('gradingModal');
+        const saveGradeBtn = document.getElementById('saveGradeBtn');
+        const cancelGradeBtn = document.getElementById('cancelGradeBtn');
+        
+        // Current grading record
+        let currentGradingRecord = null;
+        
+        // Event Listeners
+        logoutBtn.addEventListener('click', logout);
+        tabs.forEach(tab => tab.addEventListener('click', switchTab));
+        addStudentBtn.addEventListener('click', () => studentModal.style.display = 'flex');
+        cancelStudentBtn.addEventListener('click', () => studentModal.style.display = 'none');
+        saveStudentBtn.addEventListener('click', saveStudent);
+        exportResultsBtn.addEventListener('click', exportResults);
+        cancelGradeBtn.addEventListener('click', () => gradingModal.style.display = 'none');
+        saveGradeBtn.addEventListener('click', saveTheoryGrade);
+        
+        // Initialize filters
+        document.getElementById('classFilter').addEventListener('change', loadStudents);
+        document.getElementById('studentSearch').addEventListener('input', loadStudents);
+        document.getElementById('resultClassFilter').addEventListener('change', loadResults);
+        document.getElementById('subjectFilter').addEventListener('change', loadResults);
+        document.getElementById('termFilter').addEventListener('change', loadResults);
+        document.getElementById('gradingClassFilter').addEventListener('change', loadGrading);
+        document.getElementById('gradingSubjectFilter').addEventListener('change', loadGrading);
+        document.getElementById('gradingStatusFilter').addEventListener('change', loadGrading);
+        
+        // Initial load
+        loadStudents();
+        loadResults();
+        loadGrading();
+        
+        // Functions
+        function logout() {
+            sessionStorage.removeItem('isAdminAuthenticated');
+            window.location.href = 'admin.html';
+        }
+        
+        function switchTab(e) {
+            const tabId = e.target.getAttribute('data-tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        async function loadStudents() {
+            const classFilter = document.getElementById('classFilter').value;
+            const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+            
+            let query = db.collection('students');
+            
+            if (classFilter) {
+                query = query.where('class', '==', classFilter);
+            }
+            
+            const snapshot = await query.get();
+            studentsList.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const student = doc.data();
+                
+                if (searchTerm && !(
+                    student.examNumber.toLowerCase().includes(searchTerm) || 
+                    student.name.toLowerCase().includes(searchTerm)
+                )) {
+                    return;
+                }
+                
+                studentsList.innerHTML += `
+                    <tr>
+                        <td>${student.examNumber}</td>
+                        <td>${student.name}</td>
+                        <td>${student.class}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteStudent('${doc.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        async function loadResults() {
+            const classFilter = document.getElementById('resultClassFilter').value;
+            const subjectFilter = document.getElementById('subjectFilter').value;
+            const termFilter = document.getElementById('termFilter').value;
+            
+            let query = db.collection('examResults');
+            
+            if (classFilter) query = query.where('class', '==', classFilter);
+            if (subjectFilter) query = query.where('subject', '==', subjectFilter);
+            if (termFilter) query = query.where('term', '==', termFilter);
+            
+            const snapshot = await query.orderBy('submittedAt', 'desc').get();
+            resultsList.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const result = doc.data();
+                const totalScore = (result.objectiveScore || 0) + (result.theoryScore || 0);
+                
+                resultsList.innerHTML += `
+                    <tr>
+                        <td>${result.examNumber}</td>
+                        <td>${result.studentName}</td>
+                        <td>${result.class}</td>
+                        <td>${result.subject}</td>
+                        <td>${result.objectiveScore || '-'}/${result.totalQuestions}</td>
+                        <td>${result.theoryScore !== undefined ? result.theoryScore : 'Pending'}</td>
+                        <td>${totalScore}</td>
+                        <td>${result.term} Term</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        async function loadGrading() {
+            const classFilter = document.getElementById('gradingClassFilter').value;
+            const subjectFilter = document.getElementById('gradingSubjectFilter').value;
+            const statusFilter = document.getElementById('gradingStatusFilter').value;
+            
+            let query = db.collection('examResults');
+            
+            if (classFilter) query = query.where('class', '==', classFilter);
+            if (subjectFilter) query = query.where('subject', '==', subjectFilter);
+            if (statusFilter === 'ungraded') query = query.where('theoryScore', '==', null);
+            
+            const snapshot = await query.orderBy('submittedAt', 'desc').get();
+            gradingList.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const result = doc.data();
+                
+                gradingList.innerHTML += `
+                    <tr>
+                        <td>${result.examNumber}</td>
+                        <td>${result.studentName}</td>
+                        <td>${result.class}</td>
+                        <td>${result.subject}</td>
+                        <td>${result.objectiveScore || '-'}/${result.totalQuestions}</td>
+                        <td>${result.theoryScore !== undefined ? result.theoryScore : 'Pending'}</td>
+                        <td>
+                            <button class="btn" onclick="openGradingModal('${doc.id}')">
+                                <i class="fas fa-edit"></i> Grade
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        async function saveStudent() {
+            const examNumber = document.getElementById('examNumber').value.trim().toUpperCase();
+            const fullName = document.getElementById('fullName').value.trim();
+            const surname = document.getElementById('surname').value.trim().toLowerCase();
+            const studentClass = document.getElementById('studentClass').value;
+            
+            if (!examNumber || !fullName || !surname) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            try {
+                await db.collection('students').add({
+                    examNumber,
+                    name: fullName,
+                    surname,
+                    class: studentClass,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                alert('Student added successfully!');
+                studentModal.style.display = 'none';
+                loadStudents();
+            } catch (error) {
+                console.error('Error adding student:', error);
+                alert('Error adding student. Please try again.');
+            }
+        }
+        
+        async function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                try {
+                    await db.collection('students').doc(studentId).delete();
+                    loadStudents();
+                } catch (error) {
+                    console.error('Error deleting student:', error);
+                    alert('Error deleting student.');
+                }
+            }
+        }
+        
+        async function openGradingModal(resultId) {
+            const doc = await db.collection('examResults').doc(resultId).get();
+            currentGradingRecord = { id: resultId, ...doc.data() };
+            
+            document.getElementById('gradingInfo').innerHTML = `
+                <p><strong>Student:</strong> ${currentGradingRecord.studentName} (${currentGradingRecord.examNumber})</p>
+                <p><strong>Class:</strong> ${currentGradingRecord.class}</p>
+                <p><strong>Subject:</strong> ${currentGradingRecord.subject}</p>
+                <p><strong>Objective Score:</strong> ${currentGradingRecord.objectiveScore}/${currentGradingRecord.totalQuestions}</p>
+            `;
+            
+            document.getElementById('theoryScore').value = currentGradingRecord.theoryScore || '';
+            gradingModal.style.display = 'flex';
+        }
+        
+        async function saveTheoryGrade() {
+            const theoryScore = parseInt(document.getElementById('theoryScore').value);
+            
+            if (isNaN(theoryScore) || theoryScore < 0 || theoryScore > 60) {
+                alert('Please enter a valid theory score (0-60)');
+                return;
+            }
+            
+            try {
+                await db.collection('examResults').doc(currentGradingRecord.id).update({
+                    theoryScore,
+                    gradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                gradingModal.style.display = 'none';
+                loadGrading();
+                loadResults();
+            } catch (error) {
+                console.error('Error saving grade:', error);
+                alert('Error saving grade. Please try again.');
+            }
+        }
+        
+        function exportResults() {
+            const rows = [];
+            const tableRows = document.querySelectorAll('#resultsTable tbody tr');
+            
+            // Add headers
+            rows.push([
+                'Exam Number',
+                'Student Name',
+                'Class',
+                'Subject',
+                'Objective Score',
+                'Theory Score',
+                'Total Score',
+                'Term'
+            ]);
+            
+            // Add data
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                rows.push([
+                    cells[0].textContent,
+                    cells[1].textContent,
+                    cells[2].textContent,
+                    cells[3].textContent,
+                    cells[4].textContent,
+                    cells[5].textContent,
+                    cells[6].textContent,
+                    cells[7].textContent
+                ]);
+            });
+            
+            // Create CSV
+            const csv = Papa.unparse(rows);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, `exam_results_${new Date().toISOString().slice(0,10)}.csv`);
+        }
+        
+        // Make functions available globally for HTML onclick handlers
+        window.deleteStudent = deleteStudent;
+        window.openGradingModal = openGradingModal;
+    </script>
+</body>
+</html>
