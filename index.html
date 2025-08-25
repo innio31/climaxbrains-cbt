@@ -1,233 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Climax Brains Academy - CBT Portal</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary-bg: #0a0f1f;
-      --accent-cyan: #00f7ff;
-      --accent-pink: #ff00c8;
-      --text-light: #f0f0f0;
-      --card-bg: rgba(255,255,255,0.05);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Climax Brains Academy - CBT Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #005f73;
+            --secondary-color: #0a9396;
+            --accent-color: #94d2bd;
+            --text-color: #e9d8a6;
+            --bg-color: #001219;
+        }
 
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #0a0f1f, #111d3c);
-      color: var(--text-light);
-      overflow-x: hidden;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    /* Navbar */
-    nav {
-      background: rgba(10,15,31,0.8);
-      backdrop-filter: blur(10px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    nav h1 {
-      font-size: 1.3rem;
-      color: var(--accent-cyan);
-      margin: 0;
-    }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    /* Hero */
-    .hero {
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-    .hero h2 {
-      font-size: 2rem;
-      color: var(--accent-pink);
-    }
-    .hero p {
-      max-width: 700px;
-      margin: 1rem auto;
-      line-height: 1.6;
-    }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
 
-    /* Cards */
-    .mode-section {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      margin: 3rem auto;
-      max-width: 1000px;
-      padding: 0 1rem;
-    }
-    .mode-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 16px;
-      padding: 2rem;
-      width: 280px;
-      text-align: center;
-      transition: 0.3s;
-      backdrop-filter: blur(8px);
-      cursor: pointer;
-    }
-    .mode-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 20px var(--accent-cyan);
-    }
-    .mode-card i {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      color: var(--accent-cyan);
-    }
-    .mode-card h3 {
-      color: var(--accent-pink);
-      margin: 0.5rem 0;
-    }
+        .logo {
+            height: 50px;
+            margin-right: 1rem;
+        }
 
-    /* Slider */
-    .slider {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      gap: 1rem;
-      padding: 2rem;
-    }
-    .slide {
-      flex: none;
-      width: 300px;
-      border-radius: 12px;
-      overflow: hidden;
-      scroll-snap-align: start;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-      position: relative;
-    }
-    .slide img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-    .caption {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      padding: 0.5rem;
-      background: rgba(0,0,0,0.6);
-      font-size: 0.9rem;
-      text-align: center;
-    }
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #fff;
+        }
 
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      margin-top: 3rem;
-      border-top: 1px solid rgba(255,255,255,0.2);
-      font-size: 0.9rem;
-    }
-    footer a {
-      color: var(--accent-cyan);
-      font-weight: bold;
-      text-decoration: none;
-    }
-    footer a:hover {
-      color: var(--accent-pink);
-    }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
 
-    /* Glow Animations */
-    .neon-glow {
-      position: fixed;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: var(--accent-cyan);
-      filter: blur(150px);
-      opacity: 0.3;
-      z-index: -1;
-      animation: float 12s infinite alternate;
-    }
-    .neon-glow:nth-child(2) {
-      top: 30%;
-      left: 70%;
-      background: var(--accent-pink);
-      animation-duration: 15s;
-    }
-    @keyframes float {
-      from { transform: translateY(0) translateX(0); }
-      to { transform: translateY(-60px) translateX(40px); }
-    }
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
 
-    @media (max-width: 768px) {
-      .mode-section {
-        flex-direction: column;
-        align-items: center;
-      }
-      .slide {
-        width: 90%;
-      }
-    }
-  </style>
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .hero-content {
+            max-width: 50%;
+        }
+
+        .hero-content h2 {
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .cta-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .primary-btn {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+
+        .primary-btn:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: #fff;
+            border: 2px solid var(--secondary-color);
+        }
+
+        .secondary-btn:hover {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+
+        .hero-image {
+            max-width: 45%;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer p {
+            margin: 0;
+            color: #fff;
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 100%;
+                margin-bottom: 2rem;
+            }
+
+            .hero-image {
+                max-width: 80%;
+            }
+
+            .header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="neon-glow"></div>
-  <div class="neon-glow"></div>
+    <header class="header">
+        <div class="logo-container">
+            <img src="school-logo.png" alt="The Climax Model Schools Logo" class="logo">
+            <h1>The Climax Brains Academy, Ota</h1>
+        </div>
+    </header>
 
-  <!-- Navbar -->
-  <nav>
-    <h1>Climax Brains CBT Portal</h1>
-    <i class="fas fa-laptop-code"></i>
-  </nav>
-
-  <!-- Hero -->
-  <section class="hero">
-    <h2>Welcome to Our CBT Platform</h2>
-    <p>
-      Experience a modern way of testing designed for excellence. 
-      Choose practice mode to sharpen your skills or exam mode for official assessments. 
-      Step into the digital future of learning with confidence.
-    </p>
-  </section>
-
-  <!-- Mode Selection -->
-  <div class="mode-section">
-    <a href="practice.html" class="mode-card">
-      <i class="fas fa-graduation-cap"></i>
-      <h3>Practice Mode</h3>
-      <p>Unlimited practice with instant feedback</p>
-    </a>
-    <a href="exam.html" class="mode-card">
-      <i class="fas fa-file-alt"></i>
-      <h3>Exam Mode</h3>
-      <p>Official timed tests with results</p>
-    </a>
-  </div>
-
-  <!-- Slider -->
-  <div class="slider">
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80" alt="Students CBT">
-      <div class="caption">Students engaging with CBT</div>
+    <div class="main-container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>CBT Portal for Champions</h2>
+                <p>Welcome to the future of learning. Take timed exams or practice at your own pace. Our platform is designed to help you succeed.</p>
+                <div class="cta-buttons">
+                    <a href="exam.html" class="cta-btn primary-btn">Take Exam</a>
+                    <a href="practice.html" class="cta-btn secondary-btn">Practice Mode</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Students using computers">
+            </div>
+        </section>
     </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=80" alt="Computer lab">
-      <div class="caption">Modern computer labs</div>
-    </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80" alt="Collaboration">
-      <div class="caption">Preparing for the digital future</div>
-    </div>
-  </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 The Climax Brains Academy, Ota. All Rights Reserved.</p>
-    <p>Powered by <a href="https://digskills.netlify.app" target="_blank">DigSkills</a></p>
-  </footer>
+    <footer class="footer">
+        <p>© 2025 The Climax Brains Academy, Ota. All Rights Reserved.</p>
+        <p>Powered by <a href="https://digskills.netlify.app" target="_blank" rel="noopener noreferrer">DigSkills</a></p>
+    </footer>
 </body>
 </html>
