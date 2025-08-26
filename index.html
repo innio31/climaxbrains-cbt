@@ -5,17 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Climax Brains Academy - CBT Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #005f73;
-            --secondary-color: #0a9396;
-            --accent-color: #94d2bd;
-            --text-color: #e9d8a6;
-            --bg-color: #001219;
+            --primary-color: #3b82f6;
+            --secondary-color: #1d4ed8;
+            --accent-color: #60a5fa;
+            --text-color: #f3f4f6;
+            --bg-color: #0c0a09;
+            --card-bg: #1f2937;
+            --border-color: #374151;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
             background: var(--bg-color);
@@ -31,12 +34,13 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem 3rem;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(12, 10, 9, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 1000;
+            animation: fadeInDown 1s ease-out;
         }
 
         .logo-container {
@@ -45,26 +49,55 @@
         }
 
         .logo {
-            height: 50px;
+            height: 60px;
             margin-right: 1rem;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            transition: transform 0.3s;
+        }
+        
+        .logo:hover {
+            transform: scale(1.1);
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin: 0;
             color: #fff;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .nav-links a {
             color: #fff;
             text-decoration: none;
-            margin-left: 1.5rem;
-            font-weight: 500;
-            transition: color 0.3s;
+            margin-left: 2rem;
+            font-weight: 600;
+            transition: color 0.3s, transform 0.3s;
+            position: relative;
         }
 
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            display: block;
+            margin-top: 5px;
+            right: 0;
+            background: var(--accent-color);
+            transition: width 0.4s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            left: 0;
+            background: var(--accent-color);
+        }
+        
         .nav-links a:hover {
             color: var(--accent-color);
+            transform: translateY(-2px);
         }
 
         .main-container {
@@ -73,120 +106,200 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .hero-section {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            max-width: 1200px;
+            justify-content: center;
+            max-width: 1400px;
             width: 100%;
+            padding: 4rem 2rem;
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeInUp 1.5s ease-out;
+            gap: 4rem;
         }
 
         .hero-content {
             max-width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         .hero-content h2 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: #fff;
-            margin-bottom: 1rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            animation: textGlow 2s infinite alternate;
         }
 
         .hero-content p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            line-height: 1.6;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #e5e7eb;
         }
 
         .cta-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .cta-btn {
-            padding: 1rem 2rem;
+            padding: 1.2rem 2.5rem;
             border: none;
             border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .primary-btn {
-            background: var(--secondary-color);
+            background: var(--primary-color);
             color: #fff;
         }
 
         .primary-btn:hover {
             background: var(--accent-color);
-            transform: translateY(-3px);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
         }
 
         .secondary-btn {
             background: transparent;
-            color: #fff;
-            border: 2px solid var(--secondary-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
         }
 
         .secondary-btn:hover {
-            background: var(--secondary-color);
+            background: var(--primary-color);
             color: #fff;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
         }
 
         .hero-image {
             max-width: 45%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            animation: imageZoomIn 1.5s ease-out;
         }
 
         .hero-image img {
             width: 100%;
             height: auto;
-            border-radius: 20px;
+            display: block;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .hero-image:hover img {
+            transform: scale(1.1);
         }
 
         .footer {
             text-align: center;
             padding: 1.5rem;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(12, 10, 9, 0.6);
+            border-top: 1px solid var(--border-color);
+            animation: fadeInUp 1s ease-out;
         }
 
         .footer p {
             margin: 0;
-            color: #fff;
+            color: #9ca3af;
         }
 
         .footer a {
             color: var(--accent-color);
             text-decoration: none;
+            font-weight: 600;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .hero-section {
                 flex-direction: column;
                 text-align: center;
+                gap: 2rem;
             }
 
             .hero-content {
                 max-width: 100%;
-                margin-bottom: 2rem;
             }
 
             .hero-image {
                 max-width: 80%;
             }
 
+            .cta-buttons {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 padding: 1rem;
+                text-align: center;
             }
 
             .nav-links {
                 margin-top: 1rem;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero-content h2 {
+                font-size: 2.5rem;
+            }
+            
+            .cta-btn {
+                padding: 1rem 2rem;
             }
         }
+        
+        /* Keyframe animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes imageZoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes textGlow {
+            from { text-shadow: 0 0 5px rgba(59, 130, 246, 0.7); }
+            to { text-shadow: 0 0 15px rgba(59, 130, 246, 1); }
+        }
+        
     </style>
 </head>
 <body>
@@ -195,13 +308,17 @@
             <img src="school-logo.png" alt="The Climax Model Schools Logo" class="logo">
             <h1>The Climax Brains Academy, Ota</h1>
         </div>
+        <nav class="nav-links">
+            <a href="exam.html">Take Exam</a>
+            <a href="practice.html">Practice Mode</a>
+        </nav>
     </header>
 
     <div class="main-container">
         <section class="hero-section">
             <div class="hero-content">
-                <h2>CBT Portal for Champions</h2>
-                <p>Welcome to the future of learning. Take timed exams or practice at your own pace. Our platform is designed to help you succeed.</p>
+                <h2>CBT Portal for Future Leaders 🚀</h2>
+                <p>Level up your learning experience. Dive into our interactive platform, where timed exams and flexible practice sessions are just a click away. Get ready to ace your goals!</p>
                 <div class="cta-buttons">
                     <a href="exam.html" class="cta-btn primary-btn">Take Exam</a>
                     <a href="practice.html" class="cta-btn secondary-btn">Practice Mode</a>
