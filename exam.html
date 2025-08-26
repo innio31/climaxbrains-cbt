@@ -3,101 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Mode - Climax Brains Academy</title>
+    <title>Exam Mode - The Climax Brains Academy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root {
-            --primary-purple: #6a0dad;
-            --secondary-wine: #722f37;
-            --accent-gold: #d4af37;
-            --light-purple: #9c6fdc;
-            --light-wine: #a05252;
+            --primary-color: #005f73;
+            --secondary-color: #0a9396;
+            --accent-color: #94d2bd;
+            --text-color: #e9d8a6;
+            --bg-color: #001219;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #f9f3ff 0%, #f5e8f5 100%);
-            color: #333;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
         }
         
         .header {
-            background: linear-gradient(to right, var(--secondary-wine), var(--primary-purple));
-            color: white;
-            text-align: center;
-            padding: 2rem 1rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        
+
         .logo-container {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            margin-bottom: 1rem;
-            text-align: center;
         }
-        
+
         .logo {
-            height: 80px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            height: 50px;
+            margin-right: 1rem;
         }
-        
-        .school-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .school-info h1 {
+
+        .header h1 {
+            font-size: 1.5rem;
             margin: 0;
-            font-size: 1.8rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: #fff;
         }
-        
-        .school-info h2 {
-            margin: 5px 0 0 0;
-            font-size: 1.2rem;
-            font-weight: normal;
-        }
-        
+
         .back-btn {
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            color: white;
-            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-size: 1rem;
             text-decoration: none;
             display: flex;
             align-items: center;
+            background: rgba(148, 210, 189, 0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
         }
-        
+
+        .back-btn:hover {
+            background: rgba(148, 210, 189, 0.3);
+            transform: translateX(-5px);
+        }
+
         .back-btn i {
-            margin-right: 5px;
+            margin-right: 8px;
         }
-        
+
         .main-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
             padding: 0 20px;
         }
-        
+
         /* Form container styles */
         .form-container {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            border-left: 5px solid var(--secondary-wine);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-left: 5px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 0 0 0 100%;
+            opacity: 0.1;
+        }
+        
+        .form-title {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .form-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
         }
         
         .form-group {
@@ -106,70 +150,133 @@
         
         label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             font-weight: 600;
-            color: var(--secondary-wine);
+            color: var(--secondary-color);
+            font-size: 1.05rem;
         }
         
         input, select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 14px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
             font-size: 1rem;
-            background-color: #f9f9f9;
-            border: 2px solid var(--light-wine);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(148, 210, 189, 0.2);
         }
         
         .start-btn {
             display: block;
             width: 100%;
-            background: linear-gradient(to right, var(--secondary-wine), var(--primary-purple));
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 15px;
+            padding: 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 95, 115, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
         }
         
         .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(114,47,55,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 95, 115, 0.4);
+        }
+        
+        .start-btn:hover::before {
+            left: 100%;
         }
         
         .info-box {
-            background: rgba(114,47,55,0.1);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1.5rem;
-            border-left: 4px solid var(--secondary-wine);
+            background: rgba(148, 210, 189, 0.08);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--accent-color);
+            position: relative;
+        }
+        
+        .info-box i {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            opacity: 0.3;
         }
         
         /* Exam container styles (initially hidden) */
         .exam-container {
             display: none;
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .exam-container::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, var(--accent-color), #5dd8ba);
+            border-radius: 100% 0 0 0;
+            opacity: 0.1;
         }
         
         .exam-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
         
         .student-info {
             flex: 1;
+        }
+        
+        .student-info div {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .student-name {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 1.2rem;
         }
         
         .timer-container {
@@ -180,395 +287,738 @@
         
         .exam-type {
             font-size: 0.9rem;
-            color: var(--secondary-wine);
+            color: var(--secondary-color);
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }
         
         .timer {
-            background: var(--secondary-wine);
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-weight: 600;
             font-size: 1.1rem;
-        }
-        
-        .question-container {
-            margin-bottom: 2rem;
-        }
-        
-        .question-number {
-            color: var(--secondary-wine);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .question-text {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-        
-        .options-container {
-            margin-left: 1rem;
-        }
-        
-        .option {
-            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(10, 147, 150, 0.3);
             display: flex;
             align-items: center;
         }
         
+        .timer i {
+            margin-right: 8px;
+        }
+        
+        .timer.warning {
+            background: linear-gradient(to right, var(--warning), #f59e0b);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(148, 210, 189, 0.2);
+            border-radius: 4px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .question-container {
+            margin-bottom: 2.5rem;
+        }
+        
+        .question-number {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-number span {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .question-text {
+            font-size: 1.15rem;
+            margin-bottom: 1.8rem;
+            line-height: 1.7;
+            background: rgba(148, 210, 189, 0.08);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+            color: #e9d8a6;
+        }
+        
+        .options-container {
+            margin-left: 0.5rem;
+        }
+        
+        .option {
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .option:hover {
+            background: rgba(148, 210, 189, 0.1);
+            transform: translateX(5px);
+        }
+        
         .option input {
             width: auto;
-            margin-right: 10px;
+            margin-right: 15px;
             cursor: pointer;
+            width: 20px;
+            height: 20px;
+            background-color: transparent;
         }
         
         .option label {
             margin-bottom: 0;
             cursor: pointer;
             flex: 1;
+            font-weight: 500;
+            color: var(--text-color);
         }
         
         /* Theory section styles */
         .theory-section {
             margin-top: 2rem;
             padding-top: 1.5rem;
-            border-top: 2px dashed var(--light-wine);
+            border-top: 2px dashed var(--accent-color);
         }
         
         .section-title {
-            color: var(--secondary-wine);
-            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-size: 1.3rem;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
         }
         
         .theory-question {
             margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(148, 210, 189, 0.08);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
         }
         
         .theory-text {
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-color);
+            font-size: 1.1rem;
         }
         
         .theory-instruction {
             font-style: italic;
-            color: #666;
-            font-size: 0.9rem;
+            color: #e9d8a6a6;
+            font-size: 0.95rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--accent-color);
         }
         
         .nav-buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 2rem;
+            margin-top: 2.5rem;
         }
         
         .nav-btn {
-            background: var(--light-wine);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        
-        .nav-btn:hover {
-            background: var(--secondary-wine);
-        }
-        
-        .nav-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .submit-btn {
-            background: var(--primary-purple);
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
             border: none;
             padding: 12px 25px;
-            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             font-weight: 600;
-            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(10, 147, 150, 0.3);
+        }
+        
+        .nav-btn i {
+            margin-right: 8px;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(10, 147, 150, 0.4);
+        }
+        
+        .nav-btn:disabled {
+            background: #2b394d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .submit-btn {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: block;
-            margin: 2rem auto 0;
+            margin: 2.5rem auto 0;
+            box-shadow: 0 5px 15px rgba(148, 210, 189, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(148, 210, 189, 0.4);
         }
         
         /* Submission confirmation */
         .confirmation-container {
             display: none;
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .confirmation-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, var(--success), #16a34a);
+            border-radius: 0 0 0 100%;
+            opacity: 0.1;
         }
         
         .confirmation-title {
-            color: var(--secondary-wine);
+            color: var(--accent-color);
             margin-bottom: 1.5rem;
             font-size: 1.8rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .confirmation-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
         }
         
         .confirmation-message {
             margin-bottom: 1.5rem;
             font-size: 1.1rem;
-            line-height: 1.6;
+            line-height: 1.7;
+            color: var(--text-color);
         }
         
         .btn-group {
             display: flex;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.5rem;
             margin-top: 2rem;
         }
         
         .confirm-btn {
-            background: var(--secondary-wine);
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(10, 147, 150, 0.3);
+        }
+        
+        .confirm-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(10, 147, 150, 0.4);
         }
         
         .cancel-btn {
-            background: #ccc;
-            color: #333;
+            background: linear-gradient(to right, #4b5563, #6b7280);
+            color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(107, 114, 128, 0.3);
+        }
+        
+        .cancel-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(107, 114, 128, 0.4);
         }
         
         /* Results container */
         .result-container {
             display: none;
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, var(--success), #16a34a);
+            border-radius: 0 0 0 100%;
+            opacity: 0.1;
         }
         
         .result-title {
-            color: var(--secondary-wine);
+            color: var(--accent-color);
             margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .result-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
         }
         
         .result-message {
             margin-bottom: 1.5rem;
             font-size: 1.1rem;
-            line-height: 1.6;
+            line-height: 1.7;
+            color: var(--text-color);
         }
         
         .score-display {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary-purple);
-            margin: 1rem 0;
+            display: inline-block;
+            position: relative;
+            margin: 1.5rem 0;
         }
         
-        .back-to-home {
-            background: var(--secondary-wine);
+        .score {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .score-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: 800;
+            color: #e9d8a64d;
+            z-index: 1;
+        }
+        
+        .feedback-container {
+            margin: 2.5rem 0;
+        }
+        
+        .feedback-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: rgba(148, 210, 189, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feedback-title {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feedback-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .feedback-text {
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+        
+        .answers-review {
+            margin-top: 2.5rem;
+        }
+        
+        .review-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background-color: rgba(148, 210, 189, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .review-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .correct-answer {
+            background-color: rgba(34, 197, 94, 0.08);
+            border-left: 4px solid var(--success);
+        }
+        
+        .incorrect-answer {
+            background-color: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .review-question {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .review-question i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .review-answer {
+            margin: 0.8rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .review-answer::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+        
+        .correct {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .incorrect {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .user-selected {
+            font-weight: 600;
+        }
+        
+        .topic-tag {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: var(--bg-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .action-btn {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 14px 30px;
             font-size: 1rem;
             font-weight: 600;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(10, 147, 150, 0.3);
+        }
+        
+        .action-btn i {
+            margin-right: 10px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(10, 147, 150, 0.4);
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(to right, #4b5563, #6b7280);
+        }
+        
+        .action-btn.secondary:hover {
+            box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            color: var(--text-color);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+        
+        .footer p {
+            margin: 0.3rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
             transition: all 0.3s ease;
         }
         
-        @media (min-width: 768px) {
-            .logo-container {
-                flex-direction: row;
-                justify-content: center;
-                gap: 20px;
-            }
-            
-            .logo {
-                margin-bottom: 0;
-            }
-            
-            .school-info {
-                align-items: flex-start;
-            }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
         }
         
+        /* Responsive design */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .back-btn {
-                position: relative;
-                left: auto;
-                top: auto;
-                margin-bottom: 1rem;
-                justify-content: center;
-            }
-            
-            .exam-header {
+            .header {
                 flex-direction: column;
-                align-items: flex-start;
+                padding: 1rem 1.5rem;
+            }
+        
+            .nav-links {
+                margin-top: 1rem;
+            }
+        
+            .back-btn {
+                position: static;
+                margin-bottom: 1rem;
+            }
+        
+            .header h1 {
+                font-size: 1.2rem;
+            }
+        
+            .form-container, .exam-container {
+                padding: 1.5rem;
+            }
+        
+            .nav-buttons {
+                flex-direction: column;
                 gap: 1rem;
             }
-            
-            .timer-container {
-                align-self: flex-end;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-                gap: 0.5rem;
+        
+            .nav-btn, .submit-btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="back-btn animate__animated animate__fadeIn">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
         <div class="logo-container">
-            <img src="school-logo.png" alt="School Logo" class="logo">
-            <div class="school-info">
-                <h1>The Climax Brains Academy, Ota</h1>
-                <h2>Exam Mode</h2>
-            </div>
+            <img src="school-logo.png" alt="The Climax Brains Academy Logo" class="logo">
+            <h1>The Climax Brains Academy, Ota</h1>
+        </div>
+        <div class="nav-links">
+            <a href="#" style="visibility: hidden;">Placeholder</a>
         </div>
     </header>
-    
+
     <div class="main-container">
-        <!-- Registration Form -->
-        <div class="form-container animate__animated animate__fadeInUp" id="registrationForm">
-            <div class="form-group">
-                <label for="studentName">Full Name:</label>
-                <input type="text" id="studentName" placeholder="Enter your full name as registered">
-            </div>
-            
-            <div class="form-group">
-                <label for="studentClass">Class:</label>
-                <select id="studentClass">
-                    <option value="">-- Select Class --</option>
-                    <option value="jss1">JSS 1</option>
-                    <option value="jss2">JSS 2</option>
-                    <option value="jss3">JSS 3</option>
-                    <option value="sss1">SSS 1</option>
-                    <option value="sss2">SSS 2</option>
-                    <option value="sss3">SSS 3</option>
-                    <option value="sss3">WAEC/JAMB</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="academicSession">Academic Session:</label>
-                <select id="academicSession">
-                    <option value="">-- Select Session --</option>
-                    <option value="2025_2026">2025/2026</option>
-                    <option value="2026_2027">2026/2027</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="term">Term:</label>
-                <select id="term">
-                    <option value="">-- Select Term --</option>
-                    <option value="summer">Summer</option>
-                    <option value="1st">1st Term</option>
-                    <option value="2nd">2nd Term</option>
-                    <option value="3rd">3rd Term</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="examType">Exam Type:</label>
-                <select id="examType">
-                    <option value="">-- Select Exam Type --</option>
-                    <option value="ca">Continuous Assessment</option>
-                    <option value="midterm">Midterm Exam</option>
-                    <option value="exam">End of Term Exam</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="subject">Select Subject:</label>
-                <select id="subject" disabled>
-                    <option value="">-- Select Subject --</option>
-                </select>
-            </div>
-            
-            <button class="start-btn" id="startExam">Begin Examination</button>
-            
+        <div class="form-container" id="selection-form">
+            <h3 class="form-title">Enter Your Details</h3>
+            <form id="start-exam-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="student-name">Student Name</label>
+                        <input type="text" id="student-name" placeholder="E.g., John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="student-class">Class</label>
+                        <select id="student-class" required>
+                            <option value="">-- Select Class --</option>
+                            <option value="JSS1">JSS1</option>
+                            <option value="JSS2">JSS2</option>
+                            <option value="JSS3">JSS3</option>
+                            <option value="SS1">SS1</option>
+                            <option value="SS2">SS2</option>
+                            <option value="SS3">SS3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject" required>
+                            <option value="">-- Select Subject --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="term">Term</label>
+                        <select id="term" required>
+                            <option value="">-- Select Term --</option>
+                            <option value="First Term">First Term</option>
+                            <option value="Second Term">Second Term</option>
+                            <option value="Third Term">Third Term</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="session">Session</label>
+                        <input type="text" id="session" placeholder="E.g., 2024/2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exam-type">Exam Type</label>
+                        <select id="exam-type" required>
+                            <option value="">-- Select Exam Type --</option>
+                            <option value="Objective">Objective</option>
+                            <option value="Theory">Theory</option>
+                            <option value="Objective & Theory">Objective & Theory</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="start-btn" id="start-exam-btn">Start Exam <i class="fas fa-play"></i></button>
+            </form>
             <div class="info-box">
-                <p><strong>Note:</strong> The exam consists of both objective (30 minutes) and theory (30 minutes) sections. Objective answers are auto-graded while theory answers will be graded by your teacher.</p>
+                <i class="fas fa-info-circle"></i>
+                <p><strong>Heads Up:</strong> You can only take each exam once. Ensure you are ready before you begin!</p>
             </div>
         </div>
-        
-        <!-- Exam Container (hidden initially) -->
-        <div class="exam-container" id="examContainer">
+
+        <div class="exam-container" id="exam-container">
             <div class="exam-header">
                 <div class="student-info">
-                    <div id="studentNameDisplay"></div>
-                    <div id="studentClassDisplay"></div>
+                    <div class="student-name" id="display-name"></div>
+                    <div id="display-class"></div>
+                    <div id="display-subject"></div>
                 </div>
                 <div class="timer-container">
-                    <div class="exam-type" id="examTypeDisplay"></div>
-                    <div class="timer" id="timer">30:00</div>
+                    <div class="exam-type" id="display-type"></div>
+                    <div class="timer" id="timer"><i class="far fa-clock"></i> <span>--:--</span></div>
                 </div>
             </div>
             
-            <div class="question-container" id="questionContainer">
-                <!-- Questions will be inserted here by JavaScript -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
             </div>
-            
+
+            <div id="objective-questions"></div>
+
+            <div id="theory-questions" class="theory-section" style="display: none;">
+                <h3 class="section-title"><i class="fas fa-pencil-alt"></i> Theory Section</h3>
+            </div>
+
             <div class="nav-buttons">
-                <button class="nav-btn" id="prevBtn" disabled>Previous</button>
-                <button class="nav-btn" id="nextBtn">Next</button>
+                <button class="nav-btn" id="prev-btn" disabled><i class="fas fa-arrow-left"></i> Previous</button>
+                <button class="nav-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
             </div>
-            
-            <button class="submit-btn" id="submitBtn">Submit Exam</button>
+            <button class="submit-btn" id="submit-btn" style="display: none;">Submit Exam <i class="fas fa-check"></i></button>
         </div>
-        
-        <!-- Confirmation Container (hidden initially) -->
-        <div class="confirmation-container" id="confirmationContainer">
-            <h2 class="confirmation-title">Confirm Submission</h2>
-            <div class="confirmation-message">
-                Are you sure you want to submit your exam? You won't be able to make changes after submission.
-            </div>
+
+        <div class="confirmation-container" id="confirmation-container">
+            <h3 class="confirmation-title">Are you sure?</h3>
+            <p class="confirmation-message">Once you submit, you cannot change your answers. Do you want to proceed?</p>
             <div class="btn-group">
-                <button class="confirm-btn" id="confirmSubmit">Yes, Submit</button>
-                <button class="cancel-btn" id="cancelSubmit">No, Continue</button>
+                <button class="confirm-btn" id="confirm-submit">Yes, Submit</button>
+                <button class="cancel-btn" id="cancel-submit">No, Cancel</button>
             </div>
         </div>
-        
-        <!-- Results Container (hidden initially) -->
-        <div class="result-container" id="resultContainer">
-            <h2 class="result-title">Exam Submitted</h2>
-            <div class="result-message">
-                Your exam has been submitted successfully. Your objective answers have been graded automatically.
+
+        <div class="result-container" id="result-container">
+            <h3 class="result-title">Exam Submitted!</h3>
+            <p class="result-message">Your results have been successfully recorded. You can review your performance below.</p>
+            <div class="score-display">
+                <span class="score" id="score-display">--</span>
+                <span class="score-bg" id="score-bg">--</span>
             </div>
-            <div class="score-display" id="scoreDisplay">
-                Objective Score: <span id="scoreValue">0</span>%
+            <p><strong>Note:</strong> Final score will include theory questions graded by the teacher.</p>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="goBackToHome()"><i class="fas fa-home"></i> Back to Homepage</button>
+                <button class="action-btn secondary" id="review-answers-btn"><i class="fas fa-search"></i> Review Answers</button>
             </div>
-            <div class="result-message">
-                Your theory answers will be graded by your teacher and the results will be available later.
-            </div>
-            <button class="back-to-home" id="backToHome">Back to Home</button>
+            <div id="answers-review" class="answers-review" style="display: none;"></div>
         </div>
     </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 The Climax Brains Academy, Ota. All rights reserved.</p>
+        <p>Developed by <a href="https://digskills.netlify.app">DigSkills</a></p>
+    </footer>
 
     <script>
         // Firebase configuration
@@ -1234,4 +1684,5 @@
         }
     </script>
 </body>
+
 </html>
