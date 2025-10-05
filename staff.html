@@ -614,7 +614,7 @@
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-chalkboard-teacher"></i>
-                    <span>MSV Staff</span>
+                    <span>CBA Staff</span>
                 </div>
             </div>
             <ul class="sidebar-menu">
@@ -736,10 +736,10 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Admission No</th>
+                                    <th>Email</th>
                                     <th>Name</th>
+                                    <th>Admission No</th>
                                     <th>Class</th>
-                                    <th>Phone</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -1117,6 +1117,7 @@
     </div>
 
     <!-- Add/Edit Student Modal -->
+    <!-- Add Student Modal -->
     <div id="addStudentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1127,8 +1128,8 @@
                 <form id="studentForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="studentAdmissionNo">Admission Number *</label>
-                            <input type="text" id="studentAdmissionNo" class="form-control" required>
+                            <label for="studentEmail">Email Address *</label>
+                            <input type="email" id="studentEmail" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="studentClass">Class *</label>
@@ -1147,9 +1148,15 @@
                             <input type="text" id="studentLastName" class="form-control" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="studentPhone">Phone Number</label>
-                        <input type="tel" id="studentPhone" class="form-control">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentAdmissionNo">Admission Number</label>
+                            <input type="text" id="studentAdmissionNo" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentPhone">Phone Number</label>
+                            <input type="tel" id="studentPhone" class="form-control">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="studentPassword">Password *</label>
@@ -1962,10 +1969,10 @@
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-            <td>${student.admissionNumber}</td>
+            <td>${student.email}</td>
             <td>${student.firstName} ${student.lastName}</td>
+            <td>${student.admissionNumber || 'N/A'}</td>
             <td>${cls?.className || student.class}</td>
-            <td>${student.phone || 'N/A'}</td>
             <td>
                 <span class="status-badge ${student.isActive ? 'status-active' : 'status-inactive'}">
                     ${student.isActive ? 'Active' : 'Inactive'}
@@ -1990,8 +1997,22 @@
 
         function openStudentModal() {
             populateStudentForm();
-            resetStudentForm(); // Ensure fresh state
+            resetStudentForm();
             showModal('addStudentModal');
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
         }
 
         function populateStudentForm() {
@@ -2018,7 +2039,7 @@
 
         async function saveStudent() {
             const classId = document.getElementById('studentClass').value;
-            const admissionNumber = document.getElementById('studentAdmissionNo').value;
+            const studentEmail = document.getElementById('studentEmail').value.toLowerCase().trim();
 
             // Check if staff is class teacher for the selected class
             if (!staffClasses.includes(classId)) {
@@ -2027,10 +2048,11 @@
             }
 
             const studentData = {
-                admissionNumber: admissionNumber,
+                email: studentEmail,
                 firstName: document.getElementById('studentFirstName').value,
                 lastName: document.getElementById('studentLastName').value,
-                phone: document.getElementById('studentPhone').value,
+                admissionNumber: document.getElementById('studentAdmissionNo').value || '',
+                phone: document.getElementById('studentPhone').value || '',
                 class: classId,
                 role: 'student',
                 isActive: document.getElementById('studentActive').checked,
@@ -2044,26 +2066,48 @@
             }
 
             try {
-                // Check if admission number already exists (excluding current student if editing)
+                // Check if email already exists (excluding current student if editing)
                 const existingStudentQuery = await db.collection('users')
-                    .where('admissionNumber', '==', studentData.admissionNumber)
+                    .where('email', '==', studentData.email)
                     .get();
 
-                let admissionNumberExists = false;
+                let emailExists = false;
 
                 if (currentEditingStudentId) {
-                    // For editing: check if any other student has this admission number
-                    admissionNumberExists = existingStudentQuery.docs.some(doc =>
+                    // For editing: check if any other student has this email
+                    emailExists = existingStudentQuery.docs.some(doc =>
                         doc.id !== currentEditingStudentId
                     );
                 } else {
-                    // For new student: check if any student has this admission number
-                    admissionNumberExists = !existingStudentQuery.empty;
+                    // For new student: check if any student has this email
+                    emailExists = !existingStudentQuery.empty;
                 }
 
-                if (admissionNumberExists) {
-                    showNotification('Admission number already exists!', 'error');
+                if (emailExists) {
+                    showNotification('Email address already exists!', 'error');
                     return;
+                }
+
+                // Check admission number uniqueness if provided
+                if (studentData.admissionNumber) {
+                    const existingAdmissionQuery = await db.collection('users')
+                        .where('admissionNumber', '==', studentData.admissionNumber)
+                        .get();
+
+                    let admissionNumberExists = false;
+
+                    if (currentEditingStudentId) {
+                        admissionNumberExists = existingAdmissionQuery.docs.some(doc =>
+                            doc.id !== currentEditingStudentId
+                        );
+                    } else {
+                        admissionNumberExists = !existingAdmissionQuery.empty;
+                    }
+
+                    if (admissionNumberExists) {
+                        showNotification('Admission number already exists!', 'error');
+                        return;
+                    }
                 }
 
                 if (currentEditingStudentId) {
@@ -2105,17 +2149,17 @@
                 document.getElementById('studentModalTitle').textContent = 'Edit Student';
 
                 // Populate form with student data
-                document.getElementById('studentAdmissionNo').value = student.admissionNumber;
+                document.getElementById('studentEmail').value = student.email;
                 document.getElementById('studentFirstName').value = student.firstName;
                 document.getElementById('studentLastName').value = student.lastName;
+                document.getElementById('studentAdmissionNo').value = student.admissionNumber || '';
                 document.getElementById('studentPhone').value = student.phone || '';
                 document.getElementById('studentClass').value = student.class;
                 document.getElementById('studentActive').checked = student.isActive !== false;
 
-                // Hide password field for editing and clear any existing value
+                // Hide password field for editing
                 const passwordGroup = document.getElementById('studentPassword').closest('.form-group');
                 passwordGroup.style.display = 'none';
-                document.getElementById('studentPassword').value = '';
 
                 showModal('addStudentModal');
             } catch (error) {
