@@ -1,145 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Climax CBT</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Admin Dashboard - The Climax Brains Academy</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-purple: #6a0dad;
-            --secondary-wine: #722f37;
-            --accent-gold: #d4af37;
+            --primary: #1a365d;
+            --secondary: #d4af37;
+            --accent: #2d5aa0;
+            --light: #f8fafc;
+            --dark: #2d3748;
+            --danger: #e53e3e;
+            --warning: #dd6b20;
+            --success: #38a169;
+            --info: #3182ce;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f5f7fa;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
+        body {
+            background: #f1f5f9;
+            color: #333;
+            min-height: 100vh;
+        }
+
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            display: flex;
+            min-height: 100vh;
         }
-        
-        header {
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
         }
-        
-        .logout-btn {
-            background: var(--secondary-wine);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .tab-container {
+
+        .user-info {
             display: flex;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .tab.active {
-            border-bottom-color: var(--primary-purple);
-            font-weight: bold;
-            color: var(--primary-purple);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-        
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #f9f9f9;
-            color: var(--secondary-wine);
-        }
-        
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .btn {
-            background: var(--primary-purple);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        
-        .btn-export {
-            background: var(--accent-gold);
-        }
-        
-        .btn-danger {
-            background: #e74c3c;
-        }
-        
-        .filters {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             gap: 15px;
         }
-        
-        .filter-group {
+
+        .content-area {
+            padding: 30px;
             flex: 1;
-            min-width: 200px;
+            overflow-y: auto;
         }
-        
+
+        /* Section Styles */
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #c19b2e;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-inactive {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-warning {
+            background: #feebcb;
+            color: #744210;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -147,560 +328,2044 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
-        
+
+        .modal.active {
+            display: flex;
+        }
+
         .modal-content {
             background: white;
-            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Question Options */
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .option-label {
+            width: 30px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .correct-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed #ddd;
             border-radius: 8px;
-            width: 500px;
-            max-width: 90%;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--secondary);
+        }
+
+        .file-upload i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .file-upload.active {
+            border-color: var(--success);
+            background: #f8fff9;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-error {
+            color: var(--danger);
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-input-container .form-control {
+            padding-right: 40px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card:nth-child(2) {
+            border-left-color: var(--secondary);
+        }
+
+        .stat-card:nth-child(3) {
+            border-left-color: var(--success);
+        }
+
+        .stat-card:nth-child(4) {
+            border-left-color: var(--info);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card:nth-child(1) h3 {
+            color: var(--primary);
+        }
+
+        .stat-card:nth-child(2) h3 {
+            color: var(--secondary);
+        }
+
+        .stat-card:nth-child(3) h3 {
+            color: var(--success);
+        }
+
+        .stat-card:nth-child(4) h3 {
+            color: var(--info);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <h1 style="color: var(--primary-purple);">
-                <i class="fas fa-user-shield"></i> Climax CBT Admin Dashboard
-            </h1>
-            <button class="logout-btn" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </header>
-        
-        <div class="tab-container">
-            <div class="tab active" data-tab="students">Students</div>
-            <div class="tab" data-tab="results">Exam Results</div>
-            <div class="tab" data-tab="grading">Theory Grading</div>
-        </div>
-        
-        <!-- Students Tab -->
-        <div id="students" class="tab-content active">
-            <h2>Student Management</h2>
-            <button class="btn" id="addStudentBtn">
-                <i class="fas fa-user-plus"></i> Add New Student
-            </button>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Filter by Class</label>
-                    <select id="classFilter" class="form-control">
-                        <option value="">All Classes</option>
-                        <option value="JSS1">JSS 1</option>
-                        <option value="JSS2">JSS 2</option>
-                        <option value="JSS3">JSS 3</option>
-                        <option value="SS1">SS 1</option>
-                        <option value="SS2">SS 2</option>
-                        <option value="SS3">SS 3</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" id="studentSearch" class="form-control" placeholder="Search by name or exam number">
-                </div>
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal" style="display: flex;">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Admin Login</h2>
+                <p>The Climax Brains Academy, Ota</p>
             </div>
-            
-            <table id="studentsTable">
-                <thead>
-                    <tr>
-                        <th>Exam Number</th>
-                        <th>Full Name</th>
-                        <th>Class</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="studentsList">
-                    <!-- Students will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Results Tab -->
-        <div id="results" class="tab-content">
-            <h2>Exam Results</h2>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Class</label>
-                    <select id="resultClassFilter" class="form-control">
-                        <option value="">All Classes</option>
-                        <option value="JSS1">JSS 1</option>
-                        <option value="JSS2">JSS 2</option>
-                        <option value="JSS3">JSS 3</option>
-                        <option value="SS1">SS 1</option>
-                        <option value="SS2">SS 2</option>
-                        <option value="SS3">SS 3</option>
-                    </select>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control"
+                        placeholder="admin@climaxbrainsacademy.edu.ng" required>
                 </div>
-                <div class="filter-group">
-                    <label>Subject</label>
-                    <select id="subjectFilter" class="form-control">
-                        <option value="">All Subjects</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="English">English</option>
-                        <option value="Physics">Physics</option>
-                        <!-- Add more subjects -->
-                    </select>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter password"
+                            required>
+                        <button type="button" class="password-toggle"
+                            onclick="togglePasswordVisibility('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label>Term</label>
-                    <select id="termFilter" class="form-control">
-                        <option value="">All Terms</option>
-                        <option value="1st">Summer Coaching</option>
-                        <option value="1st">First Term</option>
-                        <option value="2nd">Second Term</option>
-                        <option value="3rd">Third Term</option>
-                    </select>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                <div id="loginError" class="login-error" style="display: none;">
+                    Invalid email or password
                 </div>
-            </div>
-            
-            <button class="btn btn-export" id="exportResultsBtn">
-                <i class="fas fa-download"></i> Export Results
-            </button>
-            
-            <table id="resultsTable">
-                <thead>
-                    <tr>
-                        <th>Exam No.</th>
-                        <th>Name</th>
-                        <th>Class</th>
-                        <th>Subject</th>
-                        <th>Objective</th>
-                        <th>Theory</th>
-                        <th>Total</th>
-                        <th>Term</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsList">
-                    <!-- Results will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Grading Tab -->
-        <div id="grading" class="tab-content">
-            <h2>Theory Grading</h2>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Class</label>
-                    <select id="gradingClassFilter" class="form-control">
-                        <option value="">All Classes</option>
-                        <option value="JSS1">JSS 1</option>
-                        <option value="JSS2">JSS 2</option>
-                        <option value="JSS3">JSS 3</option>
-                        <option value="SS1">SS 1</option>
-                        <option value="SS2">SS 2</option>
-                        <option value="SS3">SS 3</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Subject</label>
-                    <select id="gradingSubjectFilter" class="form-control">
-                        <option value="">All Subjects</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="English">English</option>
-                        <option value="Physics">Physics</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Status</label>
-                    <select id="gradingStatusFilter" class="form-control">
-                        <option value="ungraded">Ungraded Only</option>
-                        <option value="all">All</option>
-                    </select>
-                </div>
-            </div>
-            
-            <table id="gradingTable">
-                <thead>
-                    <tr>
-                        <th>Exam No.</th>
-                        <th>Name</th>
-                        <th>Class</th>
-                        <th>Subject</th>
-                        <th>Objective</th>
-                        <th>Theory</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="gradingList">
-                    <!-- Grading entries will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <!-- Add Student Modal -->
-    <div class="modal" id="studentModal">
-        <div class="modal-content">
-            <h3>Add New Student</h3>
-            <div class="form-group">
-                <label>Exam Number</label>
-                <input type="text" id="examNumber" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="fullName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Surname (Password)</label>
-                <input type="text" id="surname" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Class</label>
-                <select id="studentClass" class="form-control">
-                    <option value="JSS1">JSS 1</option>
-                    <option value="JSS2">JSS 2</option>
-                    <option value="JSS3">JSS 3</option>
-                    <option value="SS1">SS 1</option>
-                    <option value="SS2">SS 2</option>
-                    <option value="SS3">SS 3</option>
-                </select>
-            </div>
-            <button class="btn" id="saveStudentBtn">Save Student</button>
-            <button class="btn btn-danger" id="cancelStudentBtn">Cancel</button>
-        </div>
-    </div>
-    
-    <!-- Grade Theory Modal -->
-    <div class="modal" id="gradingModal">
-        <div class="modal-content">
-            <h3>Grade Theory Paper</h3>
-            <div id="gradingInfo"></div>
-            <div class="form-group">
-                <label>Theory Score (Max: 60)</label>
-                <input type="number" id="theoryScore" class="form-control" min="0" max="60">
-            </div>
-            <button class="btn" id="saveGradeBtn">Save Grade</button>
-            <button class="btn btn-danger" id="cancelGradeBtn">Cancel</button>
+            </form>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
+    <!-- Main Layout -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>CBA Admin</span>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </li>
+                <li class="menu-item" data-section="subjects">
+                    <i class="fas fa-book"></i>
+                    <span>Subjects & Classes</span>
+                </li>
+                <li class="menu-item" data-section="questions">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Questions Bank</span>
+                </li>
+                <li class="menu-item" data-section="exams">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Exams</span>
+                </li>
+                <li class="menu-item" data-section="results">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Results & Analytics</span>
+                </li>
+                <li class="menu-item" data-section="settings">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <h3>Admin Dashboard - The Climax Brains Academy</h3>
+                <div class="user-info">
+                    <span id="adminName">Admin User</span>
+                    <button class="btn btn-outline" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard Overview
+                        </h2>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Total Students</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="totalStaff">0</h3>
+                            <p>Total Staff</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="totalExams">0</h3>
+                            <p>Active Exams</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="totalQuestions">0</h3>
+                            <p>Questions in Bank</p>
+                        </div>
+                    </div>
+
+                    <div class="recent-activity"
+                        style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h3 style="margin-bottom: 20px; color: var(--primary);">Recent Activity</h3>
+                        <div id="recentActivity">
+                            <p style="text-align: center; color: #666; padding: 20px;">Loading recent activity...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section -->
+                <div id="users" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-users"></i> User Management
+                        </h2>
+                        <div>
+                            <button class="btn btn-primary" id="addStaffBtn">
+                                <i class="fas fa-plus"></i> Add Staff
+                            </button>
+                            <button class="btn btn-primary" id="addStudentBtn" style="margin-left: 10px;">
+                                <i class="fas fa-plus"></i> Add Student
+                            </button>
+                            <button class="btn btn-warning" id="transferStudentsBtn" style="margin-left: 10px;">
+                                <i class="fas fa-exchange-alt"></i> Transfer Students
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="staffTab">Staff Accounts</button>
+                        <button class="tab-btn" data-tab="studentTab">Student Accounts</button>
+                    </div>
+
+                    <div id="staffTab" class="tab-content active">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Staff Id</th>
+                                        <th>Subjects</th>
+                                        <th>Classes</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading staff data...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="studentTab" class="tab-content">
+                        <div class="filters" style="margin-bottom: 20px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="filterStudentClass">Filter by Class</label>
+                                    <select id="filterStudentClass" class="form-control">
+                                        <option value="">All Classes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-outline" id="clearStudentFilter" style="margin-top: 25px;">
+                                        <i class="fas fa-times"></i> Clear Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th width="50px">
+                                            <input type="checkbox" id="selectAllStudents"
+                                                onchange="toggleSelectAllStudents(this)">
+                                        </th>
+                                        <th>Admission No</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading student
+                                            data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects & Classes Section -->
+                <div id="subjects" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-book"></i> Subjects & Classes Management
+                        </h2>
+                        <div>
+                            <button class="btn btn-primary" id="addSubjectBtn">
+                                <i class="fas fa-plus"></i> Add Subject
+                            </button>
+                            <button class="btn btn-primary" id="addClassBtn" style="margin-left: 10px;">
+                                <i class="fas fa-plus"></i> Add Class
+                            </button>
+                            <button class="btn btn-success" id="assignTeacherBtn" style="margin-left: 10px;">
+                                <i class="fas fa-user-plus"></i> Assign Teacher
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="subjectsTab">Subjects</button>
+                        <button class="tab-btn" data-tab="classesTab">Classes</button>
+                    </div>
+
+                    <div id="subjectsTab" class="tab-content active">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject Name</th>
+                                        <th>Subject Code</th>
+                                        <th>Description</th>
+                                        <th>Assigned Teachers</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectsTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading subjects
+                                            data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="classesTab" class="tab-content">
+                        <div class="filters" style="margin-bottom: 20px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="filterClassLevel">Filter by Level</label>
+                                    <select id="filterClassLevel" class="form-control">
+                                        <option value="">All Levels</option>
+                                        <option value="primary">Primary</option>
+                                        <option value="junior">Junior Secondary</option>
+                                        <option value="senior">Senior Secondary</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-outline" id="clearClassFilter" style="margin-top: 25px;">
+                                        <i class="fas fa-times"></i> Clear Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class Name</th>
+                                        <th>Class Code</th>
+                                        <th>Level</th>
+                                        <th>Student Count</th>
+                                        <th>Class Teacher</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classesTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">Loading classes
+                                            data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Bank Section -->
+                <div id="questions" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-question-circle"></i> Questions Bank
+                        </h2>
+                        <div>
+                            <button class="btn btn-primary" id="addQuestionBtn">
+                                <i class="fas fa-plus"></i> Add Question
+                            </button>
+                            <button class="btn btn-success" id="bulkUploadBtn" style="margin-left: 10px;">
+                                <i class="fas fa-upload"></i> Bulk Upload
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters" style="margin-bottom: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filterSubject">Filter by Subject</label>
+                                <select id="filterSubject" class="form-control">
+                                    <option value="">All Subjects</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterClass">Filter by Class</label>
+                                <select id="filterClass" class="form-control">
+                                    <option value="">All Classes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterDifficulty">Filter by Difficulty</label>
+                                <select id="filterDifficulty" class="form-control">
+                                    <option value="">All Difficulties</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Difficulty</th>
+                                    <th>Marks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">Loading questions data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Exams Section -->
+                <div id="exams" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt"></i> Exams Management
+                        </h2>
+                        <button class="btn btn-primary" id="createExamBtn">
+                            <i class="fas fa-plus"></i> Create Exam
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Exam Title</th>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Duration</th>
+                                    <th>Questions</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examsTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 20px;">Loading exams data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Results & Analytics Section -->
+                <div id="results" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-bar"></i> Results & Analytics
+                        </h2>
+                    </div>
+
+                    <div class="filters" style="margin-bottom: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="resultsExam">Select Exam</label>
+                                <select id="resultsExam" class="form-control">
+                                    <option value="">Select Exam</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="resultsClass">Select Class</label>
+                                <select id="resultsClass" class="form-control">
+                                    <option value="">All Classes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary" style="margin-top: 25px;" id="generateReportBtn">
+                                    <i class="fas fa-chart-bar"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="resultsContent">
+                        <div class="chart-container">
+                            <h3 class="chart-title">Performance Overview</h3>
+                            <div id="performanceChart"
+                                style="height: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #666;">
+                                Select an exam to view performance chart
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Admission No</th>
+                                        <th>Score</th>
+                                        <th>Percentage</th>
+                                        <th>Grade</th>
+                                        <th>Time Spent</th>
+                                        <th>Submitted</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">Select an exam to
+                                            view results</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-cogs"></i> System Settings
+                        </h2>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="generalSettings">General</button>
+                        <button class="tab-btn" data-tab="gradingSettings">Grading System</button>
+                        <button class="tab-btn" data-tab="academicSettings">Academic</button>
+                    </div>
+
+                    <div id="generalSettings" class="tab-content active">
+                        <form id="generalSettingsForm">
+                            <div class="form-group">
+                                <label for="schoolName">School Name</label>
+                                <input type="text" id="schoolName" class="form-control"
+                                    value="The Climax Brains Academy, Ota" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="academicYear">Academic Year</label>
+                                    <input type="text" id="academicYear" class="form-control" value="2024/2025"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="academicTerm">Academic Term</label>
+                                    <select id="academicTerm" class="form-control" required>
+                                        <option value="First Term">First Term</option>
+                                        <option value="Second Term">Second Term</option>
+                                        <option value="Third Term">Third Term</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save General Settings</button>
+                        </form>
+                    </div>
+
+                    <div id="gradingSettings" class="tab-content">
+                        <form id="gradingSettingsForm">
+                            <div class="form-group">
+                                <label>Grading System</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="gradeAMin">Grade A (Min %)</label>
+                                        <input type="number" id="gradeAMin" class="form-control" min="0" max="100"
+                                            value="75" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gradeBMin">Grade B (Min %)</label>
+                                        <input type="number" id="gradeBMin" class="form-control" min="0" max="100"
+                                            value="60" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gradeCMin">Grade C (Min %)</label>
+                                        <input type="number" id="gradeCMin" class="form-control" min="0" max="100"
+                                            value="50" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="gradeDMin">Grade D (Min %)</label>
+                                        <input type="number" id="gradeDMin" class="form-control" min="0" max="100"
+                                            value="40" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gradeFMin">Grade F (Min %)</label>
+                                        <input type="number" id="gradeFMin" class="form-control" min="0" max="100"
+                                            value="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Grading System</button>
+                        </form>
+                    </div>
+
+                    <div id="academicSettings" class="tab-content">
+                        <form id="academicSettingsForm">
+                            <div class="form-group">
+                                <label for="passingPercentage">Passing Percentage (%)</label>
+                                <input type="number" id="passingPercentage" class="form-control" min="0" max="100"
+                                    value="50" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="examDuration">Default Exam Duration (minutes)</label>
+                                <input type="number" id="examDuration" class="form-control" min="5" value="60" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="maxQuestions">Maximum Questions per Exam</label>
+                                <input type="number" id="maxQuestions" class="form-control" min="1" value="50" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Academic Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Staff Modal -->
+    <div id="addStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Staff Member</h3>
+                <button class="modal-close" onclick="closeModal('addStaffModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staffFirstName">First Name</label>
+                            <input type="text" id="staffFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffLastName">Last Name</label>
+                            <input type="text" id="staffLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffEmail">Email</label>
+                        <input type="email" id="staffEmail" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staffId">Staff ID</label>
+                            <input type="text" id="staffId" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffRole">Role</label>
+                            <select id="staffRole" class="form-control" required>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                                <option value="principal">Principal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffSubjects">Subjects (for teachers)</label>
+                        <select id="staffSubjects" class="form-control" multiple>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="english">English</option>
+                            <option value="science">Science</option>
+                            <option value="social">Social Studies</option>
+                        </select>
+                        <small>Hold Ctrl to select multiple subjects</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffClasses">Classes (for teachers)</label>
+                        <select id="staffClasses" class="form-control" multiple>
+                            <option value="primary1">Primary 1</option>
+                            <option value="primary2">Primary 2</option>
+                            <option value="jss1">JSS 1</option>
+                            <option value="jss2">JSS 2</option>
+                        </select>
+                        <small>Hold Ctrl to select multiple classes</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addStaffModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveStaff()">Save Staff</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Student</h3>
+                <button class="modal-close" onclick="closeModal('addStudentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStudentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentFirstName">First Name</label>
+                            <input type="text" id="studentFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentLastName">Last Name</label>
+                            <input type="text" id="studentLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentAdmissionNo">Admission Number</label>
+                        <input type="text" id="studentAdmissionNo" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentClass">Class</label>
+                        <select id="studentClass" class="form-control" required>
+                            <option value="">Select Class</option>
+                            <option value="primary1">Primary 1</option>
+                            <option value="primary2">Primary 2</option>
+                            <option value="jss1">JSS 1</option>
+                            <option value="jss2">JSS 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Email (optional)</label>
+                        <input type="email" id="studentEmail" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentParentPhone">Parent Phone</label>
+                        <input type="tel" id="studentParentPhone" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addStudentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveStudent()">Save Student</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div id="addQuestionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Question</h3>
+                <button class="modal-close" onclick="closeModal('addQuestionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addQuestionForm">
+                    <div class="form-group">
+                        <label for="questionText">Question</label>
+                        <textarea id="questionText" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="questionSubject">Subject</label>
+                            <select id="questionSubject" class="form-control" required>
+                                <option value="">Select Subject</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="english">English</option>
+                                <option value="science">Science</option>
+                                <option value="social">Social Studies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionClass">Class</label>
+                            <select id="questionClass" class="form-control" required>
+                                <option value="">Select Class</option>
+                                <option value="primary1">Primary 1</option>
+                                <option value="primary2">Primary 2</option>
+                                <option value="jss1">JSS 1</option>
+                                <option value="jss2">JSS 2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="questionDifficulty">Difficulty</label>
+                            <select id="questionDifficulty" class="form-control" required>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionMarks">Marks</label>
+                            <input type="number" id="questionMarks" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Options</label>
+                        <div class="option-row">
+                            <span class="option-label">A</span>
+                            <input type="text" id="optionA" class="form-control" placeholder="Option A" required>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">B</span>
+                            <input type="text" id="optionB" class="form-control" placeholder="Option B" required>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">C</span>
+                            <input type="text" id="optionC" class="form-control" placeholder="Option C" required>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">D</span>
+                            <input type="text" id="optionD" class="form-control" placeholder="Option D" required>
+                        </div>
+                        <div class="correct-option">
+                            <label for="correctOption">Correct Option:</label>
+                            <select id="correctOption" class="form-control" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addQuestionModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveQuestion()">Save Question</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Exam Modal -->
+    <div id="createExamModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Exam</h3>
+                <button class="modal-close" onclick="closeModal('createExamModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createExamForm">
+                    <div class="form-group">
+                        <label for="examTitle">Exam Title</label>
+                        <input type="text" id="examTitle" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examSubject">Subject</label>
+                            <select id="examSubject" class="form-control" required>
+                                <option value="">Select Subject</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="english">English</option>
+                                <option value="science">Science</option>
+                                <option value="social">Social Studies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="examClass">Class</label>
+                            <select id="examClass" class="form-control" required>
+                                <option value="">Select Class</option>
+                                <option value="primary1">Primary 1</option>
+                                <option value="primary2">Primary 2</option>
+                                <option value="jss1">JSS 1</option>
+                                <option value="jss2">JSS 2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examDuration">Duration (minutes)</label>
+                            <input type="number" id="examDuration" class="form-control" min="5" value="60" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examQuestions">Number of Questions</label>
+                            <input type="number" id="examQuestions" class="form-control" min="1" max="100" value="20"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="examInstructions">Instructions</label>
+                        <textarea id="examInstructions" class="form-control"
+                            rows="3">Answer all questions. Each question carries equal marks.</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('createExamModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveExam()">Create Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Modal -->
+    <div id="bulkUploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Bulk Upload Questions</h3>
+                <button class="modal-close" onclick="closeModal('bulkUploadModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="file-upload" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h4>Upload Excel File</h4>
+                    <p>Drag and drop your Excel file here or click to browse</p>
+                    <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Browse
+                        Files</button>
+                </div>
+                <div id="uploadProgress" style="margin-top: 20px; display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Processing...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div style="height: 10px; background: #eee; border-radius: 5px;">
+                        <div id="progressBar"
+                            style="height: 100%; width: 0%; background: var(--success); border-radius: 5px;"></div>
+                    </div>
+                </div>
+                <div id="uploadResult" style="margin-top: 20px; display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('bulkUploadModal')">Cancel</button>
+                <button class="btn btn-primary" id="processUploadBtn" onclick="processUpload()"
+                    style="display: none;">Process Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Students Modal -->
+    <div id="transferStudentsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Transfer Students</h3>
+                <button class="modal-close" onclick="closeModal('transferStudentsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="transferFromClass">Transfer From Class</label>
+                    <select id="transferFromClass" class="form-control" required>
+                        <option value="">Select Class</option>
+                        <option value="primary1">Primary 1</option>
+                        <option value="primary2">Primary 2</option>
+                        <option value="jss1">JSS 1</option>
+                        <option value="jss2">JSS 2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transferToClass">Transfer To Class</label>
+                    <select id="transferToClass" class="form-control" required>
+                        <option value="">Select Class</option>
+                        <option value="primary1">Primary 1</option>
+                        <option value="primary2">Primary 2</option>
+                        <option value="jss1">JSS 1</option>
+                        <option value="jss2">JSS 2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Students to Transfer</label>
+                    <div id="transferStudentsList"
+                        style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px;">
+                        <p style="text-align: center; color: #666;">Select a class to view students</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('transferStudentsModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="transferStudents()">Transfer Students</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Subject</h3>
+                <button class="modal-close" onclick="closeModal('addSubjectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addSubjectForm">
+                    <div class="form-group">
+                        <label for="subjectName">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectCode">Subject Code</label>
+                        <input type="text" id="subjectCode" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectDescription">Description</label>
+                        <textarea id="subjectDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectClasses">Applicable Classes</label>
+                        <select id="subjectClasses" class="form-control" multiple>
+                            <option value="primary1">Primary 1</option>
+                            <option value="primary2">Primary 2</option>
+                            <option value="jss1">JSS 1</option>
+                            <option value="jss2">JSS 2</option>
+                        </select>
+                        <small>Hold Ctrl to select multiple classes</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addSubjectModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSubject()">Save Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Class Modal -->
+    <div id="addClassModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Class</h3>
+                <button class="modal-close" onclick="closeModal('addClassModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addClassForm">
+                    <div class="form-group">
+                        <label for="className">Class Name</label>
+                        <input type="text" id="className" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classCode">Class Code</label>
+                        <input type="text" id="classCode" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="classLevel">Level</label>
+                            <select id="classLevel" class="form-control" required>
+                                <option value="primary">Primary</option>
+                                <option value="junior">Junior Secondary</option>
+                                <option value="senior">Senior Secondary</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="classTeacher">Class Teacher</label>
+                            <select id="classTeacher" class="form-control">
+                                <option value="">Select Teacher</option>
+                                <option value="teacher1">Mr. Adebayo</option>
+                                <option value="teacher2">Mrs. Johnson</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="classDescription">Description</label>
+                        <textarea id="classDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addClassModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveClass()">Save Class</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Teacher Modal -->
+    <div id="assignTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Teacher to Subject</h3>
+                <button class="modal-close" onclick="closeModal('assignTeacherModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="assignTeacherForm">
+                    <div class="form-group">
+                        <label for="assignTeacher">Teacher</label>
+                        <select id="assignTeacher" class="form-control" required>
+                            <option value="">Select Teacher</option>
+                            <option value="teacher1">Mr. Adebayo</option>
+                            <option value="teacher2">Mrs. Johnson</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignSubject">Subject</label>
+                        <select id="assignSubject" class="form-control" required>
+                            <option value="">Select Subject</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="english">English</option>
+                            <option value="science">Science</option>
+                            <option value="social">Social Studies</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignClasses">Classes</label>
+                        <select id="assignClasses" class="form-control" multiple required>
+                            <option value="primary1">Primary 1</option>
+                            <option value="primary2">Primary 2</option>
+                            <option value="jss1">JSS 1</option>
+                            <option value="jss2">JSS 2</option>
+                        </select>
+                        <small>Hold Ctrl to select multiple classes</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('assignTeacherModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveTeacherAssignment()">Assign Teacher</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Firebase Configuration
+        // Firebase configuration
         const firebaseConfig = {
-  apiKey: "AIzaSyDuKgSUZejLLveOe8oXlHo64OnCDFvwPc4",
-  authDomain: "climax-brains-academy-cbt.firebaseapp.com",
-  projectId: "climax-brains-academy-cbt",
-  storageBucket: "climax-brains-academy-cbt.firebasestorage.app",
-  messagingSenderId: "1024257040553",
-  appId: "1:1024257040553:web:3cc25d238fa378358f09b8",
-  measurementId: "G-LVDHYESXJG"
-};
+            apiKey: "AIzaSyC4R6MK7M5WX8Y4p8Y7Q4Z4X4Z4X4Z4X4Z4",
+            authDomain: "climax-brains-academy.firebaseapp.com",
+            projectId: "climax-brains-academy",
+            storageBucket: "climax-brains-academy.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
 
         // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        
-        // Check authentication
-        if (sessionStorage.getItem('isAdminAuthenticated') !== 'true') {
-            window.location.href = 'admin-login.html';
-        }
-        
+        const auth = firebase.auth();
+
+        // Global variables
+        let currentUser = null;
+        let selectedStudents = [];
+
         // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
         const logoutBtn = document.getElementById('logoutBtn');
-        const tabs = document.querySelectorAll('.tab');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const sections = document.querySelectorAll('.section');
+        const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
-        
-        // Student Management
+
+        // Modal buttons
+        const addStaffBtn = document.getElementById('addStaffBtn');
         const addStudentBtn = document.getElementById('addStudentBtn');
-        const studentModal = document.getElementById('studentModal');
-        const saveStudentBtn = document.getElementById('saveStudentBtn');
-        const cancelStudentBtn = document.getElementById('cancelStudentBtn');
-        const studentsList = document.getElementById('studentsList');
-        
-        // Results Management
-        const resultsList = document.getElementById('resultsList');
-        const exportResultsBtn = document.getElementById('exportResultsBtn');
-        
-        // Grading Management
-        const gradingList = document.getElementById('gradingList');
-        const gradingModal = document.getElementById('gradingModal');
-        const saveGradeBtn = document.getElementById('saveGradeBtn');
-        const cancelGradeBtn = document.getElementById('cancelGradeBtn');
-        
-        // Current grading record
-        let currentGradingRecord = null;
-        
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const createExamBtn = document.getElementById('createExamBtn');
+        const bulkUploadBtn = document.getElementById('bulkUploadBtn');
+        const transferStudentsBtn = document.getElementById('transferStudentsBtn');
+        const addSubjectBtn = document.getElementById('addSubjectBtn');
+        const addClassBtn = document.getElementById('addClassBtn');
+        const assignTeacherBtn = document.getElementById('assignTeacherBtn');
+
         // Event Listeners
-        logoutBtn.addEventListener('click', logout);
-        tabs.forEach(tab => tab.addEventListener('click', switchTab));
-        addStudentBtn.addEventListener('click', () => studentModal.style.display = 'flex');
-        cancelStudentBtn.addEventListener('click', () => studentModal.style.display = 'none');
-        saveStudentBtn.addEventListener('click', saveStudent);
-        exportResultsBtn.addEventListener('click', exportResults);
-        cancelGradeBtn.addEventListener('click', () => gradingModal.style.display = 'none');
-        saveGradeBtn.addEventListener('click', saveTheoryGrade);
-        
-        // Initialize filters
-        document.getElementById('classFilter').addEventListener('change', loadStudents);
-        document.getElementById('studentSearch').addEventListener('input', loadStudents);
-        document.getElementById('resultClassFilter').addEventListener('change', loadResults);
-        document.getElementById('subjectFilter').addEventListener('change', loadResults);
-        document.getElementById('termFilter').addEventListener('change', loadResults);
-        document.getElementById('gradingClassFilter').addEventListener('change', loadGrading);
-        document.getElementById('gradingSubjectFilter').addEventListener('change', loadGrading);
-        document.getElementById('gradingStatusFilter').addEventListener('change', loadGrading);
-        
-        // Initial load
-        loadStudents();
-        loadResults();
-        loadGrading();
-        
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if user is logged in
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    loginModal.style.display = 'none';
+                    document.querySelector('.container').style.display = 'flex';
+                    loadDashboardData();
+                } else {
+                    loginModal.style.display = 'flex';
+                    document.querySelector('.container').style.display = 'none';
+                }
+            });
+
+            // Login form
+            loginForm.addEventListener('submit', handleLogin);
+
+            // Logout button
+            logoutBtn.addEventListener('click', handleLogout);
+
+            // Menu navigation
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const sectionId = item.getAttribute('data-section');
+                    switchSection(sectionId);
+                });
+            });
+
+            // Tab navigation
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            // Modal buttons
+            addStaffBtn.addEventListener('click', () => openModal('addStaffModal'));
+            addStudentBtn.addEventListener('click', () => openModal('addStudentModal'));
+            addQuestionBtn.addEventListener('click', () => openModal('addQuestionModal'));
+            createExamBtn.addEventListener('click', () => openModal('createExamModal'));
+            bulkUploadBtn.addEventListener('click', () => openModal('bulkUploadModal'));
+            transferStudentsBtn.addEventListener('click', () => openModal('transferStudentsModal'));
+            addSubjectBtn.addEventListener('click', () => openModal('addSubjectModal'));
+            addClassBtn.addEventListener('click', () => openModal('addClassModal'));
+            assignTeacherBtn.addEventListener('click', () => openModal('assignTeacherModal'));
+
+            // File upload
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+
+            fileInput.addEventListener('change', handleFileSelect);
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('active');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('active');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('active');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            // Transfer students modal events
+            const transferFromClass = document.getElementById('transferFromClass');
+            transferFromClass.addEventListener('change', loadStudentsForTransfer);
+        });
+
         // Functions
-        function logout() {
-            sessionStorage.removeItem('isAdminAuthenticated');
-            window.location.href = 'admin.html';
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login successful
+                    loginError.style.display = 'none';
+                })
+                .catch((error) => {
+                    // Login failed
+                    loginError.style.display = 'block';
+                    console.error('Login error:', error);
+                });
         }
-        
-        function switchTab(e) {
-            const tabId = e.target.getAttribute('data-tab');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            e.target.classList.add('active');
-            
-            tabContents.forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+
+        function handleLogout() {
+            auth.signOut()
+                .then(() => {
+                    // Logout successful
+                    currentUser = null;
+                })
+                .catch((error) => {
+                    console.error('Logout error:', error);
+                });
         }
-        
-        async function loadStudents() {
-            const classFilter = document.getElementById('classFilter').value;
-            const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
-            
-            let query = db.collection('students');
-            
-            if (classFilter) {
-                query = query.where('class', '==', classFilter);
-            }
-            
-            const snapshot = await query.get();
-            studentsList.innerHTML = '';
-            
-            snapshot.forEach(doc => {
-                const student = doc.data();
-                
-                if (searchTerm && !(
-                    student.examNumber.toLowerCase().includes(searchTerm) || 
-                    student.name.toLowerCase().includes(searchTerm)
-                )) {
-                    return;
+
+        function switchSection(sectionId) {
+            // Update menu items
+            menuItems.forEach(item => {
+                if (item.getAttribute('data-section') === sectionId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
                 }
-                
-                studentsList.innerHTML += `
-                    <tr>
-                        <td>${student.examNumber}</td>
-                        <td>${student.name}</td>
-                        <td>${student.class}</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteStudent('${doc.id}')">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </td>
-                    </tr>
-                `;
+            });
+
+            // Update sections
+            sections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+
+            // Load section-specific data
+            switch (sectionId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    loadUsersData();
+                    break;
+                case 'subjects':
+                    loadSubjectsData();
+                    break;
+                case 'questions':
+                    loadQuestionsData();
+                    break;
+                case 'exams':
+                    loadExamsData();
+                    break;
+                case 'results':
+                    loadResultsData();
+                    break;
+                case 'settings':
+                    loadSettingsData();
+                    break;
+            }
+        }
+
+        function switchTab(tabId) {
+            // Update tab buttons
+            tabBtns.forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update tab contents
+            tabContents.forEach(content => {
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
             });
         }
-        
-        async function loadResults() {
-            const classFilter = document.getElementById('resultClassFilter').value;
-            const subjectFilter = document.getElementById('subjectFilter').value;
-            const termFilter = document.getElementById('termFilter').value;
-            
-            let query = db.collection('examResults');
-            
-            if (classFilter) query = query.where('class', '==', classFilter);
-            if (subjectFilter) query = query.where('subject', '==', subjectFilter);
-            if (termFilter) query = query.where('term', '==', termFilter);
-            
-            const snapshot = await query.orderBy('submittedAt', 'desc').get();
-            resultsList.innerHTML = '';
-            
-            snapshot.forEach(doc => {
-                const result = doc.data();
-                const totalScore = (result.objectiveScore || 0) + (result.theoryScore || 0);
-                
-                resultsList.innerHTML += `
-                    <tr>
-                        <td>${result.examNumber}</td>
-                        <td>${result.studentName}</td>
-                        <td>${result.class}</td>
-                        <td>${result.subject}</td>
-                        <td>${result.objectiveScore || '-'}/${result.totalQuestions}</td>
-                        <td>${result.theoryScore !== undefined ? result.theoryScore : 'Pending'}</td>
-                        <td>${totalScore}</td>
-                        <td>${result.term} Term</td>
-                    </tr>
-                `;
-            });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
         }
-        
-        async function loadGrading() {
-            const classFilter = document.getElementById('gradingClassFilter').value;
-            const subjectFilter = document.getElementById('gradingSubjectFilter').value;
-            const statusFilter = document.getElementById('gradingStatusFilter').value;
-            
-            let query = db.collection('examResults');
-            
-            if (classFilter) query = query.where('class', '==', classFilter);
-            if (subjectFilter) query = query.where('subject', '==', subjectFilter);
-            if (statusFilter === 'ungraded') query = query.where('theoryScore', '==', null);
-            
-            const snapshot = await query.orderBy('submittedAt', 'desc').get();
-            gradingList.innerHTML = '';
-            
-            snapshot.forEach(doc => {
-                const result = doc.data();
-                
-                gradingList.innerHTML += `
-                    <tr>
-                        <td>${result.examNumber}</td>
-                        <td>${result.studentName}</td>
-                        <td>${result.class}</td>
-                        <td>${result.subject}</td>
-                        <td>${result.objectiveScore || '-'}/${result.totalQuestions}</td>
-                        <td>${result.theoryScore !== undefined ? result.theoryScore : 'Pending'}</td>
-                        <td>
-                            <button class="btn" onclick="openGradingModal('${doc.id}')">
-                                <i class="fas fa-edit"></i> Grade
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
-        
-        async function saveStudent() {
-            const examNumber = document.getElementById('examNumber').value.trim().toUpperCase();
-            const fullName = document.getElementById('fullName').value.trim();
-            const surname = document.getElementById('surname').value.trim().toLowerCase();
-            const studentClass = document.getElementById('studentClass').value;
-            
-            if (!examNumber || !fullName || !surname) {
-                alert('Please fill all fields');
+
+        function togglePasswordVisibility(passwordFieldId) {
+            const passwordField = document.getElementById(passwordFieldId);
+            const toggleButton = passwordField.parentNode.querySelector('.password-toggle i');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.classList.remove('fa-eye');
+                toggleButton.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleButton.classList.remove('fa-eye-slash');
+                toggleButton.classList.add('fa-eye');
+            }
+        }
+
+        function toggleSelectAllStudents(checkbox) {
+            const studentCheckboxes = document.querySelectorAll('#studentTableBody input[type="checkbox"]');
+            studentCheckboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+            });
+
+            if (checkbox.checked) {
+                // Add all student IDs to selectedStudents array
+                selectedStudents = Array.from(studentCheckboxes).map(cb => cb.value);
+            } else {
+                selectedStudents = [];
+            }
+        }
+
+        function handleFileSelect() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const processUploadBtn = document.getElementById('processUploadBtn');
+
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                uploadArea.innerHTML = `
+                    <i class="fas fa-file-excel" style="color: var(--success);"></i>
+                    <h4>${fileName}</h4>
+                    <p>File selected and ready for upload</p>
+                `;
+                uploadArea.classList.add('active');
+                processUploadBtn.style.display = 'inline-block';
+            }
+        }
+
+        function processUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const uploadResult = document.getElementById('uploadResult');
+
+            if (fileInput.files.length === 0) {
+                alert('Please select a file first.');
                 return;
             }
-            
-            try {
-                await db.collection('students').add({
-                    examNumber,
-                    name: fullName,
-                    surname,
-                    class: studentClass,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                alert('Student added successfully!');
-                studentModal.style.display = 'none';
-                loadStudents();
-            } catch (error) {
-                console.error('Error adding student:', error);
-                alert('Error adding student. Please try again.');
-            }
-        }
-        
-        async function deleteStudent(studentId) {
-            if (confirm('Are you sure you want to delete this student?')) {
-                try {
-                    await db.collection('students').doc(studentId).delete();
-                    loadStudents();
-                } catch (error) {
-                    console.error('Error deleting student:', error);
-                    alert('Error deleting student.');
+
+            const file = fileInput.files[0];
+            uploadProgress.style.display = 'block';
+
+            // Simulate upload progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+
+                    // Simulate processing completion
+                    setTimeout(() => {
+                        uploadResult.innerHTML = `
+                            <div class="status-success status-badge">
+                                <i class="fas fa-check-circle"></i> Upload completed successfully!
+                            </div>
+                            <p style="margin-top: 10px;">25 questions imported from the Excel file.</p>
+                        `;
+                        uploadResult.style.display = 'block';
+                    }, 500);
                 }
-            }
+            }, 100);
         }
-        
-        async function openGradingModal(resultId) {
-            const doc = await db.collection('examResults').doc(resultId).get();
-            currentGradingRecord = { id: resultId, ...doc.data() };
-            
-            document.getElementById('gradingInfo').innerHTML = `
-                <p><strong>Student:</strong> ${currentGradingRecord.studentName} (${currentGradingRecord.examNumber})</p>
-                <p><strong>Class:</strong> ${currentGradingRecord.class}</p>
-                <p><strong>Subject:</strong> ${currentGradingRecord.subject}</p>
-                <p><strong>Objective Score:</strong> ${currentGradingRecord.objectiveScore}/${currentGradingRecord.totalQuestions}</p>
+
+        function loadStudentsForTransfer() {
+            const transferFromClass = document.getElementById('transferFromClass').value;
+            const transferStudentsList = document.getElementById('transferStudentsList');
+
+            if (!transferFromClass) {
+                transferStudentsList.innerHTML = '<p style="text-align: center; color: #666;">Select a class to view students</p>';
+                return;
+            }
+
+            // Simulate loading students
+            transferStudentsList.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <input type="checkbox" id="student1" value="student1" checked>
+                    <label for="student1" style="margin-left: 10px;">Adeola Johnson (PRI001)</label>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <input type="checkbox" id="student2" value="student2" checked>
+                    <label for="student2" style="margin-left: 10px;">Chinedu Okoro (PRI002)</label>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <input type="checkbox" id="student3" value="student3" checked>
+                    <label for="student3" style="margin-left: 10px;">Fatima Bello (PRI003)</label>
+                </div>
             `;
-            
-            document.getElementById('theoryScore').value = currentGradingRecord.theoryScore || '';
-            gradingModal.style.display = 'flex';
         }
-        
-        async function saveTheoryGrade() {
-            const theoryScore = parseInt(document.getElementById('theoryScore').value);
-            
-            if (isNaN(theoryScore) || theoryScore < 0 || theoryScore > 60) {
-                alert('Please enter a valid theory score (0-60)');
+
+        function transferStudents() {
+            const transferFromClass = document.getElementById('transferFromClass').value;
+            const transferToClass = document.getElementById('transferToClass').value;
+
+            if (!transferFromClass || !transferToClass) {
+                alert('Please select both source and destination classes.');
                 return;
             }
-            
-            try {
-                await db.collection('examResults').doc(currentGradingRecord.id).update({
-                    theoryScore,
-                    gradedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                gradingModal.style.display = 'none';
-                loadGrading();
-                loadResults();
-            } catch (error) {
-                console.error('Error saving grade:', error);
-                alert('Error saving grade. Please try again.');
+
+            if (transferFromClass === transferToClass) {
+                alert('Source and destination classes cannot be the same.');
+                return;
             }
+
+            // In a real application, this would update the database
+            alert(`Students transferred from ${transferFromClass} to ${transferToClass} successfully!`);
+            closeModal('transferStudentsModal');
         }
-        
-        function exportResults() {
-            const rows = [];
-            const tableRows = document.querySelectorAll('#resultsTable tbody tr');
-            
-            // Add headers
-            rows.push([
-                'Exam Number',
-                'Student Name',
-                'Class',
-                'Subject',
-                'Objective Score',
-                'Theory Score',
-                'Total Score',
-                'Term'
-            ]);
-            
-            // Add data
-            tableRows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                rows.push([
-                    cells[0].textContent,
-                    cells[1].textContent,
-                    cells[2].textContent,
-                    cells[3].textContent,
-                    cells[4].textContent,
-                    cells[5].textContent,
-                    cells[6].textContent,
-                    cells[7].textContent
-                ]);
-            });
-            
-            // Create CSV
-            const csv = Papa.unparse(rows);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, `exam_results_${new Date().toISOString().slice(0,10)}.csv`);
+
+        // Data loading functions (simulated for demo)
+        function loadDashboardData() {
+            // Update stats
+            document.getElementById('totalStudents').textContent = '245';
+            document.getElementById('totalStaff').textContent = '28';
+            document.getElementById('totalExams').textContent = '12';
+            document.getElementById('totalQuestions').textContent = '1,250';
+
+            // Update recent activity
+            const recentActivity = document.getElementById('recentActivity');
+            recentActivity.innerHTML = `
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <i class="fas fa-user-plus" style="color: var(--success);"></i>
+                        <span style="margin-left: 10px;">5 new students registered</span>
+                    </div>
+                    <span style="color: #666;">2 hours ago</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <i class="fas fa-file-alt" style="color: var(--info);"></i>
+                        <span style="margin-left: 10px;">Mathematics exam created for JSS 1</span>
+                    </div>
+                    <span style="color: #666;">5 hours ago</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <i class="fas fa-question-circle" style="color: var(--warning);"></i>
+                        <span style="margin-left: 10px;">25 new questions added to Science</span>
+                    </div>
+                    <span style="color: #666;">Yesterday</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                    <div>
+                        <i class="fas fa-chart-bar" style="color: var(--primary);"></i>
+                        <span style="margin-left: 10px;">Exam results published for Primary 2</span>
+                    </div>
+                    <span style="color: #666;">2 days ago</span>
+                </div>
+            `;
         }
-        
-        // Make functions available globally for HTML onclick handlers
-        window.deleteStudent = deleteStudent;
-        window.openGradingModal = openGradingModal;
+
+        function loadUsersData() {
+            // Load staff data
+            const staffTableBody = document.getElementById('staffTableBody');
+            staffTableBody.innerHTML = `
+                <tr>
+                    <td>Mr. Adebayo Johnson</td>
+                    <td>STF001</td>
+                    <td>Mathematics, Physics</td>
+                    <td>JSS 1, JSS 2</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mrs. Chinyere Okoro</td>
+                    <td>STF002</td>
+                    <td>English, Literature</td>
+                    <td>JSS 1, JSS 3</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mr. Ibrahim Bello</td>
+                    <td>STF003</td>
+                    <td>Science, Biology</td>
+                    <td>Primary 4, Primary 5</td>
+                    <td><span class="status-badge status-inactive">Inactive</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+
+            // Load student data
+            const studentTableBody = document.getElementById('studentTableBody');
+            studentTableBody.innerHTML = `
+                <tr>
+                    <td><input type="checkbox" value="PRI001"></td>
+                    <td>PRI001</td>
+                    <td>Adeola Johnson</td>
+                    <td>Primary 1</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" value="PRI002"></td>
+                    <td>PRI002</td>
+                    <td>Chinedu Okoro</td>
+                    <td>Primary 1</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" value="PRI003"></td>
+                    <td>PRI003</td>
+                    <td>Fatima Bello</td>
+                    <td>Primary 2</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function loadSubjectsData() {
+            // Load subjects data
+            const subjectsTableBody = document.getElementById('subjectsTableBody');
+            subjectsTableBody.innerHTML = `
+                <tr>
+                    <td>Mathematics</td>
+                    <td>MATH</td>
+                    <td>Basic mathematics and problem solving</td>
+                    <td>Mr. Adebayo Johnson, Mrs. Ngozi Eze</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>English Language</td>
+                    <td>ENG</td>
+                    <td>English grammar and composition</td>
+                    <td>Mrs. Chinyere Okoro</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Basic Science</td>
+                    <td>SCI</td>
+                    <td>Introduction to scientific concepts</td>
+                    <td>Mr. Ibrahim Bello</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+
+            // Load classes data
+            const classesTableBody = document.getElementById('classesTableBody');
+            classesTableBody.innerHTML = `
+                <tr>
+                    <td>Primary 1</td>
+                    <td>PRI1</td>
+                    <td>Primary</td>
+                    <td>25</td>
+                    <td>Mrs. Ngozi Eze</td>
+                    <td>First year primary class</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Primary 2</td>
+                    <td>PRI2</td>
+                    <td>Primary</td>
+                    <td>28</td>
+                    <td>Mr. Ibrahim Bello</td>
+                    <td>Second year primary class</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>JSS 1</td>
+                    <td>JSS1</td>
+                    <td>Junior Secondary</td>
+                    <td>32</td>
+                    <td>Mr. Adebayo Johnson</td>
+                    <td>First year junior secondary</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function loadQuestionsData() {
+            // Load questions data
+            const questionsTableBody = document.getElementById('questionsTableBody');
+            questionsTableBody.innerHTML = `
+                <tr>
+                    <td>What is the capital of Nigeria?</td>
+                    <td>Social Studies</td>
+                    <td>Primary 4</td>
+                    <td><span class="status-badge status-success">Easy</span></td>
+                    <td>2</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Solve for x: 2x + 5 = 15</td>
+                    <td>Mathematics</td>
+                    <td>JSS 1</td>
+                    <td><span class="status-badge status-warning">Medium</span></td>
+                    <td>3</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Which of these is a renewable energy source?</td>
+                    <td>Science</td>
+                    <td>JSS 2</td>
+                    <td><span class="status-badge status-warning">Medium</span></td>
+                    <td>2</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>What is the past tense of "go"?</td>
+                    <td>English</td>
+                    <td>Primary 5</td>
+                    <td><span class="status-badge status-success">Easy</span></td>
+                    <td>1</td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function loadExamsData() {
+            // Load exams data
+            const examsTableBody = document.getElementById('examsTableBody');
+            examsTableBody.innerHTML = `
+                <tr>
+                    <td>First Term Mathematics Exam</td>
+                    <td>Mathematics</td>
+                    <td>JSS 1</td>
+                    <td>60 minutes</td>
+                    <td>25</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-info btn-sm"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>English Language Assessment</td>
+                    <td>English</td>
+                    <td>Primary 4</td>
+                    <td>45 minutes</td>
+                    <td>20</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-info btn-sm"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Science Mid-Term Test</td>
+                    <td>Science</td>
+                    <td>JSS 2</td>
+                    <td>50 minutes</td>
+                    <td>30</td>
+                    <td><span class="status-badge status-inactive">Completed</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-info btn-sm"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function loadResultsData() {
+            // This would typically load exam results and analytics
+            // For demo purposes, we'll just show placeholder content
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            resultsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 20px;">Select an exam to view results</td>
+                </tr>
+            `;
+        }
+
+        function loadSettingsData() {
+            // Settings are pre-populated in the HTML
+            // In a real application, we would load these from the database
+        }
+
+        // Save functions (simulated for demo)
+        function saveStaff() {
+            alert('Staff member saved successfully!');
+            closeModal('addStaffModal');
+            // In a real application, this would save to Firebase
+        }
+
+        function saveStudent() {
+            alert('Student saved successfully!');
+            closeModal('addStudentModal');
+            // In a real application, this would save to Firebase
+        }
+
+        function saveQuestion() {
+            alert('Question saved successfully!');
+            closeModal('addQuestionModal');
+            // In a real application, this would save to Firebase
+        }
+
+        function saveExam() {
+            alert('Exam created successfully!');
+            closeModal('createExamModal');
+            // In a real application, this would save to Firebase
+        }
+
+        function saveSubject() {
+            alert('Subject saved successfully!');
+            closeModal('addSubjectModal');
+            // In a real application, this would save to Firebase
+        }
+
+        function saveClass() {
+            alert('Class saved successfully!');
+            closeModal('addClassModal');
+            // In a real application, this would save to Firebase
+        }
+
+        function saveTeacherAssignment() {
+            alert('Teacher assigned successfully!');
+            closeModal('assignTeacherModal');
+            // In a real application, this would save to Firebase
+        }
     </script>
 </body>
+
 </html>

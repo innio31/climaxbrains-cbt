@@ -1,0 +1,4115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - The Climax Brains Academy, ota</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a4b8c;
+            --secondary: #f37b21;
+            --accent: #34a853;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .content-area {
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e06e1d;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(243, 123, 33, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Question Options */
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .option-label {
+            width: 30px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .correct-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--secondary);
+        }
+
+        .file-upload i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .file-upload.active {
+            border-color: var(--success);
+            background: #f8fff9;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-error {
+            color: var(--danger);
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+
+        /* Add to your existing CSS */
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-input-container .form-control {
+            padding-right: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Modal - FIXED -->
+    <div id="loginModal" class="login-modal" style="display: flex;">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Admin Login</h2>
+                <p>Enter your admin credentials</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="admin@climaxbrains.com"
+                        required>
+                </div>
+                <!-- Replace the password input in login form -->
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter password"
+                            required>
+                        <button type="button" class="password-toggle"
+                            onclick="togglePasswordVisibility('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                <div id="loginError" class="login-error" style="display: none;">
+                    Invalid email or password
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>CBA Admin</span>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </li>
+                <li class="menu-item" data-section="subjects">
+                    <i class="fas fa-book"></i>
+                    <span>Subjects & Classes</span>
+                </li>
+                <li class="menu-item" data-section="questions">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Questions Bank</span>
+                </li>
+                <li class="menu-item" data-section="exams">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Exams</span>
+                </li>
+                <li class="menu-item" data-section="results">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Results & Analytics</span>
+                </li>
+                <li class="menu-item" data-section="settings">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <h3>Admin Dashboard</h3>
+                <div class="user-info">
+                    <span id="adminName">Admin User</span>
+                    <button class="btn btn-outline" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard Overview
+                        </h2>
+                    </div>
+
+                    <div class="stats-grid"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div class="stat-card"
+                            style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid var(--primary);">
+                            <h3 style="font-size: 2.5rem; color: var(--primary); margin-bottom: 10px;"
+                                id="totalStudents">0</h3>
+                            <p style="color: #666;">Total Students</p>
+                        </div>
+                        <div class="stat-card"
+                            style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid var(--secondary);">
+                            <h3 style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 10px;"
+                                id="totalStaff">0</h3>
+                            <p style="color: #666;">Total Staff</p>
+                        </div>
+                        <div class="stat-card"
+                            style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid var(--success);">
+                            <h3 style="font-size: 2.5rem; color: var(--success); margin-bottom: 10px;" id="totalExams">0
+                            </h3>
+                            <p style="color: #666;">Active Exams</p>
+                        </div>
+                        <div class="stat-card"
+                            style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid var(--accent);">
+                            <h3 style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"
+                                id="totalQuestions">0</h3>
+                            <p style="color: #666;">Questions in Bank</p>
+                        </div>
+                    </div>
+
+                    <div class="recent-activity"
+                        style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h3 style="margin-bottom: 20px; color: var(--primary);">Recent Activity</h3>
+                        <div id="recentActivity">
+                            <p style="text-align: center; color: #666; padding: 20px;">Loading recent activity...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section -->
+                <div id="users" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-users"></i> User Management
+                        </h2>
+                        <div>
+                            <button class="btn btn-primary" id="addStaffBtn">
+                                <i class="fas fa-plus"></i> Add Staff
+                            </button>
+                            <button class="btn btn-primary" id="addStudentBtn" style="margin-left: 10px;">
+                                <i class="fas fa-plus"></i> Add Student
+                            </button>
+                            <!-- ADD THIS BUTTON -->
+                            <button class="btn btn-warning" id="transferStudentsBtn" style="margin-left: 10px;">
+                                <i class="fas fa-exchange-alt"></i> Transfer Students
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="staffTab">Staff Accounts</button>
+                        <button class="tab-btn" data-tab="studentTab">Student Accounts</button>
+                    </div>
+
+                    <div id="staffTab" class="tab-content active">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Staff Id</th>
+                                        <th>Subjects</th>
+                                        <th>Classes</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading staff data...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="studentTab" class="tab-content">
+                        <div class="filters" style="margin-bottom: 20px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="filterStudentClass">Filter by Class</label>
+                                    <select id="filterStudentClass" class="form-control">
+                                        <option value="">All Classes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-outline" id="clearStudentFilter" style="margin-top: 25px;">
+                                        <i class="fas fa-times"></i> Clear Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th width="50px">
+                                            <input type="checkbox" id="selectAllStudents"
+                                                onchange="toggleSelectAllStudents(this)">
+                                        </th>
+                                        <th>Admission No</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading student
+                                            data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects & Classes Section -->
+                <div id="subjects" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-book"></i> Subjects & Classes Management
+                        </h2>
+                        <div>
+                            <button class="btn btn-primary" id="addSubjectBtn">
+                                <i class="fas fa-plus"></i> Add Subject
+                            </button>
+                            <button class="btn btn-primary" id="addClassBtn" style="margin-left: 10px;">
+                                <i class="fas fa-plus"></i> Add Class
+                            </button>
+                            <!-- Add this button -->
+                            <button class="btn btn-success" id="assignTeacherBtn" style="margin-left: 10px;">
+                                <i class="fas fa-user-plus"></i> Assign Teacher
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="subjectsTab">Subjects</button>
+                        <button class="tab-btn" data-tab="classesTab">Classes</button>
+                    </div>
+
+                    <div id="subjectsTab" class="tab-content active">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject Name</th>
+                                        <th>Subject Code</th>
+                                        <th>Description</th>
+                                        <th>Assigned Teachers</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectsTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading subjects
+                                            data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="classesTab" class="tab-content">
+                        <div class="filters" style="margin-bottom: 20px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="filterClassLevel">Filter by Level</label>
+                                    <select id="filterClassLevel" class="form-control">
+                                        <option value="">All Levels</option>
+                                        <option value="primary">Primary</option>
+                                        <option value="junior">Junior Secondary</option>
+                                        <option value="senior">Senior Secondary</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-outline" id="clearClassFilter" style="margin-top: 25px;">
+                                        <i class="fas fa-times"></i> Clear Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class Name</th>
+                                        <th>Class Code</th>
+                                        <th>Level</th>
+                                        <th>Student Count</th>
+                                        <th>Class Teacher</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classesTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">Loading classes
+                                            data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Bank Section -->
+                <div id="questions" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-question-circle"></i> Questions Bank
+                        </h2>
+                        <div>
+                            <button class="btn btn-primary" id="addQuestionBtn">
+                                <i class="fas fa-plus"></i> Add Question
+                            </button>
+                            <button class="btn btn-success" id="bulkUploadBtn" style="margin-left: 10px;">
+                                <i class="fas fa-upload"></i> Bulk Upload
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters" style="margin-bottom: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filterSubject">Filter by Subject</label>
+                                <select id="filterSubject" class="form-control">
+                                    <option value="">All Subjects</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterClass">Filter by Class</label>
+                                <select id="filterClass" class="form-control">
+                                    <option value="">All Classes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterDifficulty">Filter by Difficulty</label>
+                                <select id="filterDifficulty" class="form-control">
+                                    <option value="">All Difficulties</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Difficulty</th>
+                                    <th>Marks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">Loading questions data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Exams Section -->
+                <div id="exams" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt"></i> Exams Management
+                        </h2>
+                        <button class="btn btn-primary" id="createExamBtn">
+                            <i class="fas fa-plus"></i> Create Exam
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Exam Title</th>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Duration</th>
+                                    <th>Questions</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examsTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 20px;">Loading exams data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Results & Analytics Section -->
+                <div id="results" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-bar"></i> Results & Analytics
+                        </h2>
+                    </div>
+
+                    <div class="filters" style="margin-bottom: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="resultsExam">Select Exam</label>
+                                <select id="resultsExam" class="form-control">
+                                    <option value="">Select Exam</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="resultsClass">Select Class</label>
+                                <select id="resultsClass" class="form-control">
+                                    <option value="">All Classes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary" style="margin-top: 25px;" id="generateReportBtn">
+                                    <i class="fas fa-chart-bar"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="resultsContent">
+                        <div class="chart-container">
+                            <h3 class="chart-title">Performance Overview</h3>
+                            <div id="performanceChart"
+                                style="height: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #666;">
+                                Select an exam to view performance chart
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Admission No</th>
+                                        <th>Score</th>
+                                        <th>Percentage</th>
+                                        <th>Grade</th>
+                                        <th>Time Spent</th>
+                                        <th>Submitted</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">Select an exam to
+                                            view results</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-cogs"></i> System Settings
+                        </h2>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="generalSettings">General</button>
+                        <button class="tab-btn" data-tab="gradingSettings">Grading System</button>
+                        <button class="tab-btn" data-tab="academicSettings">Academic</button>
+                    </div>
+
+                    <div id="generalSettings" class="tab-content active">
+                        <form id="generalSettingsForm">
+                            <div class="form-group">
+                                <label for="schoolName">School Name</label>
+                                <input type="text" id="schoolName" class="form-control" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="academicYear">Academic Year</label>
+                                    <input type="text" id="academicYear" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="academicTerm">Academic Term</label>
+                                    <select id="academicTerm" class="form-control" required>
+                                        <option value="First Term">First Term</option>
+                                        <option value="Second Term">Second Term</option>
+                                        <option value="Third Term">Third Term</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save General Settings</button>
+                        </form>
+                    </div>
+
+                    <div id="gradingSettings" class="tab-content">
+                        <form id="gradingSettingsForm">
+                            <div class="form-group">
+                                <label>Grading System</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="gradeAMin">Grade A (Min %)</label>
+                                        <input type="number" id="gradeAMin" class="form-control" min="0" max="100"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gradeBMin">Grade B (Min %)</label>
+                                        <input type="number" id="gradeBMin" class="form-control" min="0" max="100"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gradeCMin">Grade C (Min %)</label>
+                                        <input type="number" id="gradeCMin" class="form-control" min="0" max="100"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="gradeDMin">Grade D (Min %)</label>
+                                        <input type="number" id="gradeDMin" class="form-control" min="0" max="100"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gradeFMin">Grade F (Min %)</label>
+                                        <input type="number" id="gradeFMin" class="form-control" min="0" max="100"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Grading System</button>
+                        </form>
+                    </div>
+
+                    <div id="academicSettings" class="tab-content">
+                        <div class="form-group">
+                            <label>Academic Calendar</label>
+                            <p style="color: #666; margin-bottom: 15px;">Configure academic terms and holidays</p>
+                        </div>
+                        <button class="btn btn-primary" id="updateCalendarBtn">
+                            <i class="fas fa-calendar-alt"></i> Update Academic Calendar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- All Modals -->
+    <!-- Add Staff Modal -->
+    <div id="addStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Staff Account</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staffFirstName">First Name</label>
+                            <input type="text" id="staffFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffLastName">Last Name</label>
+                            <input type="text" id="staffLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffId">Staff ID</label>
+                        <input type="text" id="staffId" class="form-control" placeholder="Enter Staff ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffEmail">Email Address</label>
+                        <input type="email" id="staffEmail" class="form-control" placeholder="staff@climaxbrains.edu.ng"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffPassword">Password</label>
+                        <div class="password-input-container">
+                            <input type="password" id="staffPassword" class="form-control" placeholder="Enter password"
+                                required>
+                            <button type="button" class="password-toggle"
+                                onclick="togglePasswordVisibility('staffPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffSubjects">Assign Subjects</label>
+                        <select id="staffSubjects" class="form-control" multiple style="height: 120px;">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffClasses">Assign Classes</label>
+                        <select id="staffClasses" class="form-control" multiple style="height: 120px;">
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelStaffBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveStaffBtn">Save Staff</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Student Account</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStudentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentFirstName">First Name</label>
+                            <input type="text" id="studentFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentLastName">Last Name</label>
+                            <input type="text" id="studentLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentClass">Class</label>
+                        <select id="studentClass" class="form-control" required>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Email Address</label>
+                        <input type="email" id="studentEmail" class="form-control"
+                            placeholder="student@climaxbrains.edu.ng" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentPassword">Password</label>
+                        <div class="password-input-container">
+                            <input type="password" id="studentPassword" class="form-control"
+                                placeholder="Enter password" required>
+                            <button type="button" class="password-toggle"
+                                onclick="togglePasswordVisibility('studentPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelStudentBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveStudentBtn">Save Student</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Students Modal -->
+    <div id="transferStudentsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Transfer Students</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Selected Students: <span id="selectedStudentsCount">0</span> student(s)</label>
+                    <div id="selectedStudentsList"
+                        style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-top: 5px; border-radius: 4px;">
+                        <!-- Selected students will appear here -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="transferToClass">Transfer to Class</label>
+                    <select id="transferToClass" class="form-control" required>
+                        <option value="">Select Target Class</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transferEffectiveDate">Effective Date</label>
+                    <input type="date" id="transferEffectiveDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="transferNotes">Notes (Optional)</label>
+                    <textarea id="transferNotes" class="form-control" rows="3"
+                        placeholder="Add any notes about this transfer..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelTransferBtn">Cancel</button>
+                <button class="btn btn-warning" id="confirmTransferBtn">Transfer Students</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Subject</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addSubjectForm">
+                    <div class="form-group">
+                        <label for="subjectName">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectCode">Subject Code</label>
+                        <input type="text" id="subjectCode" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectDescription">Description</label>
+                        <textarea id="subjectDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelSubjectBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveSubjectBtn">Save Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Class Modal -->
+    <div id="addClassModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Class</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <!-- Update your Add Class Modal form -->
+            <div class="modal-body">
+                <form id="addClassForm">
+                    <div class="form-group">
+                        <label for="className">Class Name</label>
+                        <input type="text" id="className" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classCode">Class Code</label>
+                        <input type="text" id="classCode" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classLevel">Level</label>
+                        <select id="classLevel" class="form-control" required>
+                            <option value="">Select Level</option>
+                            <option value="primary">Primary</option>
+                            <option value="junior">Junior Secondary</option>
+                            <option value="senior">Senior Secondary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classDescription">Description</label>
+                        <textarea id="classDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="classTeacher">Class Teacher (Optional)</label>
+                        <select id="classTeacher" class="form-control">
+                            <option value="">No Class Teacher</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelClassBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveClassBtn">Save Class</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div id="addQuestionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Question</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addQuestionForm">
+                    <div class="form-group">
+                        <label for="questionText">Question Text</label>
+                        <textarea id="questionText" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="questionSubject">Subject</label>
+                            <select id="questionSubject" class="form-control" required>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionClass">Class</label>
+                            <select id="questionClass" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="questionMarks">Marks</label>
+                            <input type="number" id="questionMarks" class="form-control" value="1" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionDifficulty">Difficulty</label>
+                            <select id="questionDifficulty" class="form-control" required>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Options</label>
+                        <div class="option-row">
+                            <span class="option-label">A:</span>
+                            <input type="text" id="optionA" class="form-control" required>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">B:</span>
+                            <input type="text" id="optionB" class="form-control" required>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">C:</span>
+                            <input type="text" id="optionC" class="form-control" required>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">D:</span>
+                            <input type="text" id="optionD" class="form-control" required>
+                        </div>
+                        <div class="correct-option">
+                            <label for="correctOption">Correct Answer:</label>
+                            <select id="correctOption" class="form-control" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelQuestionBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveQuestionBtn">Save Question</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Modal -->
+    <div id="bulkUploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Bulk Upload Questions</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="file-upload" id="fileUploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h4>Upload Excel File</h4>
+                    <p>Drag & drop your Excel file here or click to browse</p>
+                    <input type="file" id="excelFile" accept=".xlsx, .xls" style="display: none;">
+                    <button class="btn btn-outline" onclick="document.getElementById('excelFile').click()">
+                        <i class="fas fa-folder-open"></i> Browse Files
+                    </button>
+                </div>
+                <div id="filePreview" style="display: none; margin-top: 20px;">
+                    <h4>File Preview</h4>
+                    <div class="table-container">
+                        <table class="data-table" id="previewTable">
+                            <thead>
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Option A</th>
+                                    <th>Option B</th>
+                                    <th>Option C</th>
+                                    <th>Option D</th>
+                                    <th>Correct</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-row" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="uploadSubject">Subject</label>
+                        <select id="uploadSubject" class="form-control" required>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadClass">Class</label>
+                        <select id="uploadClass" class="form-control" required>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelUploadBtn">Cancel</button>
+                <button class="btn btn-primary" id="processUploadBtn" disabled>Process Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Exam Modal -->
+    <div id="createExamModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Exam</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createExamForm">
+                    <div class="form-group">
+                        <label for="examTitle">Exam Title</label>
+                        <input type="text" id="examTitle" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="examDescription">Description</label>
+                        <textarea id="examDescription" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examSubject">Subject</label>
+                            <select id="examSubject" class="form-control" required>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="examClass">Class</label>
+                            <select id="examClass" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examDuration">Duration (minutes)</label>
+                            <input type="number" id="examDuration" class="form-control" value="60" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examTotalQuestions">Total Questions</label>
+                            <input type="number" id="examTotalQuestions" class="form-control" value="20" min="1"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examAvailableFrom">Available From</label>
+                            <input type="datetime-local" id="examAvailableFrom" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examAvailableUntil">Available Until</label>
+                            <input type="datetime-local" id="examAvailableUntil" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="shuffleQuestions" checked> Shuffle Questions
+                        </label>
+                        <label style="margin-left: 20px;">
+                            <input type="checkbox" id="allowMultipleAttempts"> Allow Multiple Attempts
+                        </label>
+                    </div>
+                    <div class="form-group" id="maxAttemptsContainer" style="display: none;">
+                        <label for="maxAttempts">Maximum Attempts</label>
+                        <input type="number" id="maxAttempts" class="form-control" value="1" min="1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelExamBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveExamBtn">Create Exam</button>
+            </div>
+        </div>
+    </div>
+    <!-- Assign Teacher Modal -->
+    <div id="assignTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Class Teacher</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="assignClassSelect">Select Class</label>
+                    <select id="assignClassSelect" class="form-control" required>
+                        <option value="">Select Class</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assignTeacherSelect">Select Teacher</label>
+                    <select id="assignTeacherSelect" class="form-control" required>
+                        <option value="">Select Teacher</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="teacherRole">Role</label>
+                    <select id="teacherRole" class="form-control" required>
+                        <option value="class_teacher">Class Teacher</option>
+                        <option value="assistant_teacher">Assistant Teacher</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelAssignTeacherBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveAssignTeacherBtn">Assign Teacher</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuKgSUZejLLveOe8oXlHo64OnCDFvwPc4",
+            authDomain: "climax-brains-academy-cbt.firebaseapp.com",
+            databaseURL: "https://climax-brains-academy-cbt-default-rtdb.firebaseio.com",
+            projectId: "climax-brains-academy-cbt",
+            storageBucket: "climax-brains-academy-cbt.firebasestorage.app",
+            messagingSenderId: "1024257040553",
+            appId: "1:1024257040553:web:3cc25d238fa378358f09b8",
+            measurementId: "G-LVDHYESXJG"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Global variables
+        let currentAdmin = null;
+        let subjects = [];
+        let classes = [];
+        let questions = [];
+        let exams = [];
+        let results = [];
+        let uploadedQuestions = [];
+        let currentSettings = null;
+        let selectedStudents = new Set();
+
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const adminName = document.getElementById('adminName');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initApp);
+        loginForm.addEventListener('submit', handleLogin);
+        logoutBtn.addEventListener('click', handleLogout);
+
+        // Initialize application
+        function initApp() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('adminUser');
+            if (savedUser) {
+                currentAdmin = JSON.parse(savedUser);
+                showAdminInterface();
+                loadInitialData();
+            } else {
+                loginModal.style.display = 'flex';
+            }
+
+            setupEventListeners();
+            setupTabNavigation();
+            setupModalControls();
+            document.getElementById('transferStudentsBtn').addEventListener('click', showTransferModal);
+            document.getElementById('confirmTransferBtn').addEventListener('click', transferStudents);
+
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Menu navigation
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const sectionId = item.getAttribute('data-section');
+
+                    // Update active menu item
+                    document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                    document.getElementById(sectionId).classList.add('active');
+
+                    // Load section data
+                    loadSectionData(sectionId);
+                });
+            });
+
+            // Subjects & Classes tab switching
+            document.querySelectorAll('#subjects .tab-btn').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+
+                    // Update active tab button
+                    tab.parentElement.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // Show corresponding tab content
+                    document.querySelectorAll('#subjects .tab-content').forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId).classList.add('active');
+
+                    // Load data for the active tab
+                    if (tabId === 'subjectsTab') {
+                        loadSubjectsData();
+                    } else if (tabId === 'classesTab') {
+                        loadClassesData();
+                    }
+                });
+            });
+
+            // Class level filter
+            document.getElementById('filterClassLevel').addEventListener('change', function () {
+                loadClassesData(this.value);
+            });
+
+            // Clear class filter
+            document.getElementById('clearClassFilter').addEventListener('click', function () {
+                document.getElementById('filterClassLevel').value = '';
+                loadClassesData();
+            });
+
+            // User Management
+            document.getElementById('addStaffBtn').addEventListener('click', () => {
+                loadSubjectsAndClasses().then(() => {
+                    populateStaffForm();
+                    showModal('addStaffModal');
+                });
+            });
+
+            document.getElementById('addStudentBtn').addEventListener('click', () => {
+                loadSubjectsAndClasses().then(() => {
+                    populateStudentForm();
+                    showModal('addStudentModal');
+                });
+            });
+
+            document.getElementById('saveStaffBtn').addEventListener('click', saveStaff);
+            document.getElementById('saveStudentBtn').addEventListener('click', saveStudent);
+
+            // Tab switching for user management
+            document.querySelectorAll('#users .tab-btn').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+
+                    // Update active tab button
+                    tab.parentElement.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // Show corresponding tab content
+                    document.querySelectorAll('#users .tab-content').forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId).classList.add('active');
+
+                    // Load data for the active tab
+                    if (tabId === 'staffTab') {
+                        loadStaffData();
+                    } else if (tabId === 'studentTab') {
+                        loadStudentData();
+                        populateClassFilter();
+                    }
+                });
+            });
+
+            // Student class filter
+            document.getElementById('filterStudentClass').addEventListener('change', function () {
+                loadStudentData(this.value);
+            });
+
+            // Clear student filter
+            document.getElementById('clearStudentFilter').addEventListener('click', function () {
+                document.getElementById('filterStudentClass').value = '';
+                loadStudentData();
+            });
+
+            // Subjects & Classes
+            document.getElementById('addSubjectBtn').addEventListener('click', () => showModal('addSubjectModal'));
+            document.getElementById('addClassBtn').addEventListener('click', () => showModal('addClassModal'));
+            document.getElementById('saveSubjectBtn').addEventListener('click', saveSubject);
+            document.getElementById('saveClassBtn').addEventListener('click', saveClass);
+
+            // Questions Bank
+            document.getElementById('addQuestionBtn').addEventListener('click', () => {
+                loadSubjectsAndClasses().then(() => {
+                    populateQuestionForm();
+                    showModal('addQuestionModal');
+                });
+            });
+
+            document.getElementById('bulkUploadBtn').addEventListener('click', () => {
+                loadSubjectsAndClasses().then(() => {
+                    populateUploadForm();
+                    showModal('bulkUploadModal');
+                });
+            });
+
+            document.getElementById('saveQuestionBtn').addEventListener('click', saveQuestion);
+            document.getElementById('processUploadBtn').addEventListener('click', processBulkUpload);
+
+            // File upload handling
+            document.getElementById('excelFile').addEventListener('change', handleFileUpload);
+
+            // Drag and drop events
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            fileUploadArea.addEventListener('dragover', handleDragOver);
+            fileUploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileUploadArea.classList.remove('active');
+            });
+            fileUploadArea.addEventListener('drop', handleFileDrop);
+            fileUploadArea.addEventListener('click', () => {
+                document.getElementById('excelFile').click();
+            });
+
+            // Exams
+            document.getElementById('createExamBtn').addEventListener('click', () => {
+                loadSubjectsAndClasses().then(() => {
+                    populateExamForm();
+                    showModal('createExamModal');
+                });
+            });
+
+            document.getElementById('saveExamBtn').addEventListener('click', saveExam);
+            document.getElementById('allowMultipleAttempts').addEventListener('change', function () {
+                document.getElementById('maxAttemptsContainer').style.display = this.checked ? 'block' : 'none';
+            });
+
+            // Results & Analytics
+            document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+
+            // Settings
+            document.getElementById('generalSettingsForm').addEventListener('submit', saveGeneralSettings);
+            document.getElementById('gradingSettingsForm').addEventListener('submit', saveGradingSettings);
+
+            // Filter changes
+            document.getElementById('filterSubject').addEventListener('change', filterQuestions);
+            document.getElementById('filterClass').addEventListener('change', filterQuestions);
+            document.getElementById('filterDifficulty').addEventListener('change', filterQuestions);
+        }
+
+        // Setup tab navigation
+        function setupTabNavigation() {
+            // Tab buttons
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    const container = tab.closest('.tabs').nextElementSibling;
+
+                    // Update active tab button
+                    tab.parentElement.querySelectorAll('.tab-btn').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+
+                    // Show corresponding tab content
+                    container.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Nested tabs in settings
+            document.querySelectorAll('#settings .tab-btn').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+
+                    // Update active tab button
+                    tab.parentElement.querySelectorAll('.tab-btn').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+
+                    // Show corresponding tab content
+                    document.querySelectorAll('#settings .tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // Setup modal controls
+        function setupModalControls() {
+            // Close buttons
+            document.querySelectorAll('.modal-close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', () => {
+                    closeBtn.closest('.modal').classList.remove('active');
+                });
+            });
+
+            // Cancel buttons
+            document.querySelectorAll('[id$="Btn"]').forEach(btn => {
+                if (btn.id.includes('cancel')) {
+                    btn.addEventListener('click', () => {
+                        btn.closest('.modal').classList.remove('active');
+                    });
+                }
+            });
+
+            // Close modal when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        // FIXED Authentication Function
+        async function handleLogin(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                // Check if user exists in Firestore
+                const usersSnapshot = await db.collection('users')
+                    .where('email', '==', email)
+                    .where('password', '==', password)
+                    .where('role', '==', 'admin')
+                    .get();
+
+                if (!usersSnapshot.empty) {
+                    const userDoc = usersSnapshot.docs[0];
+                    currentAdmin = userDoc.data();
+                    currentAdmin.userId = userDoc.id;
+
+                    localStorage.setItem('adminUser', JSON.stringify(currentAdmin));
+                    showAdminInterface();
+                    loginModal.style.display = 'none';
+                    loginError.style.display = 'none';
+                    loadInitialData();
+                    showNotification('Login successful!', 'success');
+                } else {
+                    loginError.style.display = 'block';
+                    showNotification('Invalid email or password', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.style.display = 'block';
+                showNotification('Login failed. Please try again.', 'error');
+            }
+
+            return false;
+        }
+
+        function handleLogout() {
+            currentAdmin = null;
+            localStorage.removeItem('adminUser');
+            loginModal.style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            loginError.style.display = 'none';
+            showNotification('Logged out successfully', 'info');
+        }
+
+        function showAdminInterface() {
+            adminName.textContent = `${currentAdmin.firstName} ${currentAdmin.lastName}`;
+        }
+
+        // Data Loading Functions
+        async function loadInitialData() {
+            await loadSubjectsAndClasses();
+            await loadSettings();
+            loadDashboardData();
+        }
+
+        async function loadSubjectsAndClasses() {
+            try {
+                const [subjectsSnapshot, classesSnapshot] = await Promise.all([
+                    db.collection('subjects').get(),
+                    db.collection('classes').get()
+                ]);
+
+                subjects = subjectsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                classes = classesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Update filter dropdowns
+                updateFilterDropdowns();
+            } catch (error) {
+                console.error('Error loading subjects and classes:', error);
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const settingsSnapshot = await db.collection('settings').doc('school_settings').get();
+                if (settingsSnapshot.exists) {
+                    currentSettings = settingsSnapshot.data();
+                    populateSettingsForm();
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        function loadSectionData(sectionId) {
+            switch (sectionId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    loadStaffData();
+                    break;
+                case 'subjects':
+                    loadSubjectsData();
+                    break;
+                case 'questions':
+                    loadQuestionsData();
+                    break;
+                case 'exams':
+                    loadExamsData();
+                    break;
+                case 'results':
+                    loadResultsData();
+                    break;
+                case 'settings':
+                    loadSettingsData();
+                    break;
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                const [
+                    studentsSnapshot,
+                    staffSnapshot,
+                    examsSnapshot,
+                    questionsSnapshot,
+                    resultsSnapshot
+                ] = await Promise.all([
+                    db.collection('users').where('role', '==', 'student').get(),
+                    db.collection('users').where('role', '==', 'staff').get(),
+                    db.collection('exams').where('isActive', '==', true).get(),
+                    db.collection('questions').get(),
+                    db.collection('results').limit(5).get()
+                ]);
+
+                // Update counts
+                document.getElementById('totalStudents').textContent = studentsSnapshot.size;
+                document.getElementById('totalStaff').textContent = staffSnapshot.size;
+                document.getElementById('totalExams').textContent = examsSnapshot.size;
+                document.getElementById('totalQuestions').textContent = questionsSnapshot.size;
+
+                // Load recent activity
+                loadRecentActivity(resultsSnapshot);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function loadRecentActivity(resultsSnapshot) {
+            const activityContainer = document.getElementById('recentActivity');
+
+            if (resultsSnapshot.empty) {
+                activityContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No recent activity</p>';
+                return;
+            }
+
+            let activityHTML = '';
+            resultsSnapshot.forEach(doc => {
+                const result = doc.data();
+                activityHTML += `
+                <div style="padding: 10px; border-left: 4px solid var(--secondary); background: #f8f9fa; margin-bottom: 10px;">
+                    <strong>Exam Completed</strong>
+                    <p style="margin: 5px 0 0 0; color: #666;">
+                        Student scored ${result.percentage}% in ${result.examTitle}
+                    </p>
+                    <small style="color: #999;">${new Date(result.submittedAt?.toDate()).toLocaleString()}</small>
+                </div>
+            `;
+            });
+
+            activityContainer.innerHTML = activityHTML;
+        }
+
+        // User Management Functions
+        async function loadStaffData() {
+            try {
+                const staffSnapshot = await db.collection('users').where('role', '==', 'staff').get();
+                populateStaffTable(staffSnapshot);
+            } catch (error) {
+                console.error('Error loading staff data:', error);
+            }
+        }
+
+        async function loadStudentData(classFilter = '') {
+            try {
+                let query = db.collection('users').where('role', '==', 'student');
+
+                if (classFilter) {
+                    query = query.where('class', '==', classFilter);
+                }
+
+                const studentsSnapshot = await query.get();
+                populateStudentTable(studentsSnapshot);
+            } catch (error) {
+                console.error('Error loading student data:', error);
+            }
+        }
+
+        function populateStaffTable(staffSnapshot) {
+            const staffTableBody = document.getElementById('staffTableBody');
+
+            if (staffSnapshot.empty) {
+                staffTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No staff members found</td></tr>';
+                return;
+            }
+
+            staffTableBody.innerHTML = '';
+            staffSnapshot.forEach(doc => {
+                const staff = doc.data();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${staff.firstName} ${staff.lastName}</td>
+                <td>${staff.staffId}</td>
+                <td>${staff.subjects ? staff.subjects.length : 0} subjects</td>
+                <td>${staff.assignedClasses ? staff.assignedClasses.length : 0} classes</td>
+                <td>
+                    <span class="status-badge ${staff.isActive ? 'status-active' : 'status-inactive'}">
+                        ${staff.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td class="action-buttons">
+                    <button class="action-btn ${staff.isActive ? 'btn-danger' : 'btn-success'}" 
+                            onclick="toggleStaffStatus('${doc.id}', ${!staff.isActive})">
+                        <i class="fas ${staff.isActive ? 'fa-times' : 'fa-check'}"></i>
+                        ${staff.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                </td>
+            `;
+                staffTableBody.appendChild(row);
+            });
+        }
+
+        function populateStudentTable(studentsSnapshot) {
+            const studentTableBody = document.getElementById('studentTableBody');
+
+            if (studentsSnapshot.empty) {
+                studentTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No students found</td></tr>';
+                return;
+            }
+
+            studentTableBody.innerHTML = '';
+            studentsSnapshot.forEach(doc => {
+                const student = doc.data();
+                const studentClass = classes.find(c => c.id === student.class);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${student.admissionNumber}</td>
+                <td>${student.firstName} ${student.lastName}</td>
+                <td>${studentClass ? studentClass.className : student.class}</td>
+                <td>
+                    <span class="status-badge ${student.isActive ? 'status-active' : 'status-inactive'}">
+                        ${student.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td class="action-buttons">
+                    <button class="action-btn ${student.isActive ? 'btn-danger' : 'btn-success'}" 
+                            onclick="toggleStudentStatus('${doc.id}', ${!student.isActive})">
+                        <i class="fas ${student.isActive ? 'fa-times' : 'fa-check'}"></i>
+                        ${student.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                </td>
+            `;
+                studentTableBody.appendChild(row);
+            });
+        }
+
+        function populateStaffForm() {
+            const subjectsSelect = document.getElementById('staffSubjects');
+            const classesSelect = document.getElementById('staffClasses');
+
+            subjectsSelect.innerHTML = '';
+            classesSelect.innerHTML = '';
+
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.subjectName;
+                subjectsSelect.appendChild(option);
+            });
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classesSelect.appendChild(option);
+            });
+        }
+
+        function populateStudentForm() {
+            const classSelect = document.getElementById('studentClass');
+            classSelect.innerHTML = '<option value="">Select Class</option>';
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classSelect.appendChild(option);
+            });
+        }
+
+        function populateClassFilter() {
+            const classFilter = document.getElementById('filterStudentClass');
+            classFilter.innerHTML = '<option value="">All Classes</option>';
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classFilter.appendChild(option);
+            });
+        }
+
+        async function saveStaff() {
+            const staffId = document.getElementById('staffId').value.trim();
+
+            // Validate Staff ID
+            if (!staffId) {
+                showNotification('Please enter a Staff ID', 'error');
+                return;
+            }
+
+            // Check if Staff ID already exists
+            const existingStaff = await db.collection('users')
+                .where('staffId', '==', staffId)
+                .where('role', '==', 'staff')
+                .get();
+
+            if (!existingStaff.empty) {
+                showNotification('Staff ID already exists. Please use a different Staff ID.', 'error');
+                return;
+            }
+
+            const staffData = {
+                firstName: document.getElementById('staffFirstName').value,
+                lastName: document.getElementById('staffLastName').value,
+                staffId: document.getElementById('staffId').value.trim(),
+                email: document.getElementById('staffEmail').value, // NEW: Actual email input
+                password: document.getElementById('staffPassword').value, // NEW: Password field
+                role: 'staff',
+                subjects: Array.from(document.getElementById('staffSubjects').selectedOptions).map(opt => opt.value),
+                assignedClasses: Array.from(document.getElementById('staffClasses').selectedOptions).map(opt => opt.value),
+                isActive: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                mustChangePassword: true
+            };
+
+
+
+            try {
+                await db.collection('users').add(staffData);
+                hideModal('addStaffModal');
+                document.getElementById('addStaffForm').reset();
+                loadStaffData();
+                showNotification('Staff account created successfully! Login email: ' + staffData.email, 'success');
+            } catch (error) {
+                console.error('Error saving staff:', error);
+                showNotification('Error creating staff account. Please try again.', 'error');
+            }
+        }
+
+        async function saveStudent() {
+            const studentData = {
+                admissionNumber: document.getElementById('studentAdmissionNo').value,
+                firstName: document.getElementById('studentFirstName').value,
+                lastName: document.getElementById('studentLastName').value,
+                email: `${document.getElementById('studentAdmissionNo').value}@mightyschool.edu.ng`,
+                password: document.getElementById('studentLastName').value.toLowerCase(),
+                role: 'student',
+                class: document.getElementById('studentClass').value,
+                isActive: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                mustChangePassword: true
+            };
+
+            try {
+                await db.collection('users').add(studentData);
+                hideModal('addStudentModal');
+                document.getElementById('addStudentForm').reset();
+                loadStudentData();
+                showNotification(`Student account created successfully! Password: ${studentData.password}`, 'success');
+            } catch (error) {
+                console.error('Error saving student:', error);
+                showNotification('Error creating student account. Please try again.', 'error');
+            }
+        }
+
+        async function toggleStaffStatus(staffId, newStatus) {
+            try {
+                await db.collection('users').doc(staffId).update({
+                    isActive: newStatus
+                });
+                loadStaffData();
+                showNotification(`Staff account ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+            } catch (error) {
+                console.error('Error updating staff status:', error);
+                showNotification('Error updating staff status.', 'error');
+            }
+        }
+
+        async function toggleStudentStatus(studentId, newStatus) {
+            try {
+                await db.collection('users').doc(studentId).update({
+                    isActive: newStatus
+                });
+                loadStudentData();
+                showNotification(`Student account ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+            } catch (error) {
+                console.error('Error updating student status:', error);
+                showNotification('Error updating student status.', 'error');
+            }
+        }
+
+        // Subjects & Classes Functions
+        async function loadSubjectsData() {
+            try {
+                const subjectsSnapshot = await db.collection('subjects').get();
+                populateSubjectsTable(subjectsSnapshot);
+            } catch (error) {
+                console.error('Error loading subjects data:', error);
+                showNotification('Error loading subjects data.', 'error');
+            }
+        }
+
+        async function loadClassesData(levelFilter = '') {
+            try {
+                let query = db.collection('classes');
+
+                // If level filter is provided, apply it
+                if (levelFilter) {
+                    query = query.where('level', '==', levelFilter);
+                }
+
+                const classesSnapshot = await query.get();
+                await populateClassesTable(classesSnapshot);
+            } catch (error) {
+                console.error('Error loading classes data:', error);
+                showNotification('Error loading classes data.', 'error');
+            }
+        }
+
+        async function populateSubjectsTable(subjectsSnapshot) {
+            const subjectsTableBody = document.getElementById('subjectsTableBody');
+
+            if (subjectsSnapshot.empty) {
+                subjectsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No subjects found</td></tr>';
+                return;
+            }
+
+            subjectsTableBody.innerHTML = '';
+
+            // Get all staff to count assigned teachers
+            const staffSnapshot = await db.collection('users')
+                .where('role', '==', 'staff')
+                .get();
+
+            const staffWithSubjects = staffSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            subjectsSnapshot.forEach(doc => {
+                const subject = doc.data();
+
+                // Count how many teachers are assigned to this subject
+                const assignedTeachersCount = staffWithSubjects.filter(staff =>
+                    staff.subjects && staff.subjects.includes(doc.id)
+                ).length;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${subject.subjectName}</td>
+            <td>${subject.subjectCode}</td>
+            <td>${subject.description || '-'}</td>
+            <td>
+                <span class="status-badge ${assignedTeachersCount > 0 ? 'status-active' : 'status-inactive'}">
+                    ${assignedTeachersCount} teacher(s)
+                </span>
+            </td>
+            <td>
+                <span class="status-badge ${subject.isActive !== false ? 'status-active' : 'status-inactive'}">
+                    ${subject.isActive !== false ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td class="action-buttons">
+                <button class="action-btn btn-primary" onclick="editSubject('${doc.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn btn-danger" onclick="deleteSubject('${doc.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="action-btn btn-info" onclick="viewSubjectDetails('${doc.id}')" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        `;
+                subjectsTableBody.appendChild(row);
+            });
+        }
+
+        async function populateClassesTable(classesSnapshot) {
+            const classesTableBody = document.getElementById('classesTableBody');
+
+            if (classesSnapshot.empty) {
+                classesTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No classes found</td></tr>';
+                return;
+            }
+
+            classesTableBody.innerHTML = '';
+
+            // Get student count for each class
+            const studentsSnapshot = await db.collection('users')
+                .where('role', '==', 'student')
+                .get();
+
+            const studentsByClass = {};
+            studentsSnapshot.forEach(doc => {
+                const student = doc.data();
+                if (student.class) {
+                    if (!studentsByClass[student.class]) {
+                        studentsByClass[student.class] = 0;
+                    }
+                    studentsByClass[student.class]++;
+                }
+            });
+
+            classesSnapshot.forEach(doc => {
+                const cls = doc.data();
+                const studentCount = studentsByClass[doc.id] || 0;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${cls.className}</td>
+            <td>${cls.classCode}</td>
+            <td>
+                <span class="status-badge ${getLevelBadgeClass(cls.level)}">
+                    ${cls.level || 'Not Set'}
+                </span>
+            </td>
+            <td>
+                <span class="status-badge ${studentCount > 0 ? 'status-active' : 'status-inactive'}">
+                    ${studentCount} student(s)
+                </span>
+            </td>
+            <td>${cls.description || '-'}</td>
+            <td class="action-buttons">
+                <button class="action-btn btn-primary" onclick="editClass('${doc.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn btn-danger" onclick="deleteClass('${doc.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="action-btn btn-info" onclick="viewClassDetails('${doc.id}')" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn btn-warning" onclick="manageClassStudents('${doc.id}')" title="Manage Students">
+                    <i class="fas fa-users"></i>
+                </button>
+            </td>
+        `;
+                classesTableBody.appendChild(row);
+            });
+        }
+
+        function getLevelBadgeClass(level) {
+            switch (level) {
+                case 'primary': return 'status-active';
+                case 'junior': return 'status-warning';
+                case 'senior': return 'status-success';
+                default: return 'status-inactive';
+            }
+        }
+
+        async function saveSubject() {
+            const subjectData = {
+                subjectName: document.getElementById('subjectName').value,
+                subjectCode: document.getElementById('subjectCode').value,
+                description: document.getElementById('subjectDescription').value,
+                createdBy: currentAdmin.userId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('subjects').add(subjectData);
+                hideModal('addSubjectModal');
+                document.getElementById('addSubjectForm').reset();
+                loadSubjectsData();
+                showNotification('Subject created successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving subject:', error);
+                showNotification('Error creating subject. Please try again.', 'error');
+            }
+        }
+
+        async function saveClass() {
+            const classData = {
+                className: document.getElementById('className').value,
+                classCode: document.getElementById('classCode').value,
+                level: document.getElementById('classLevel').value,
+                description: document.getElementById('classDescription').value,
+                isActive: true,
+                createdBy: currentAdmin.userId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('classes').add(classData);
+                hideModal('addClassModal');
+                document.getElementById('addClassForm').reset();
+                loadClassesData(); // Load classes data specifically
+                showNotification('Class created successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving class:', error);
+                showNotification('Error creating class. Please try again.', 'error');
+            }
+        }
+        // Add these new functions for additional features
+        function viewSubjectDetails(subjectId) {
+            // You can implement a detailed view modal here
+            showNotification('View subject details functionality coming soon!', 'info');
+        }
+
+        function viewClassDetails(classId) {
+            // You can implement a detailed view modal here
+            showNotification('View class details functionality coming soon!', 'info');
+        }
+
+        function manageClassStudents(classId) {
+            // Redirect to student management with class filter
+            document.querySelector('.menu-item[data-section="users"]').click();
+            setTimeout(() => {
+                document.getElementById('filterStudentClass').value = classId;
+                document.querySelector('#users .tab-btn[data-tab="studentTab"]').click();
+                loadStudentData(classId);
+            }, 500);
+        }
+
+        async function deleteSubject(subjectId) {
+            if (confirm('Are you sure you want to delete this subject? This action cannot be undone.')) {
+                try {
+                    await db.collection('subjects').doc(subjectId).delete();
+                    loadSubjectsData();
+                    showNotification('Subject deleted successfully!', 'success');
+                } catch (error) {
+                    console.error('Error deleting subject:', error);
+                    showNotification('Error deleting subject.', 'error');
+                }
+            }
+        }
+
+        async function deleteClass(classId) {
+            if (confirm('Are you sure you want to delete this class? This action cannot be undone.')) {
+                try {
+                    await db.collection('classes').doc(classId).delete();
+                    loadSubjectsData();
+                    showNotification('Class deleted successfully!', 'success');
+                } catch (error) {
+                    console.error('Error deleting class:', error);
+                    showNotification('Error deleting class.', 'error');
+                }
+            }
+        }
+
+        // Questions Bank Functions
+        async function loadQuestionsData() {
+            try {
+                const questionsSnapshot = await db.collection('questions').get();
+                questions = questionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                populateQuestionsTable(questions);
+            } catch (error) {
+                console.error('Error loading questions data:', error);
+            }
+        }
+
+        function populateQuestionsTable(questions) {
+            const questionsTableBody = document.getElementById('questionsTableBody');
+
+            if (questions.length === 0) {
+                questionsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No questions found</td></tr>';
+                return;
+            }
+
+            questionsTableBody.innerHTML = '';
+            questions.forEach(question => {
+                const subject = subjects.find(s => s.id === question.subjectId);
+                const cls = classes.find(c => c.id === question.classId);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${question.questionText.substring(0, 100)}${question.questionText.length > 100 ? '...' : ''}</td>
+                <td>${subject?.subjectName || question.subjectId}</td>
+                <td>${cls?.className || question.classId}</td>
+                <td>
+                    <span class="status-badge ${question.difficulty === 'easy' ? 'status-active' : question.difficulty === 'medium' ? 'status-warning' : 'status-inactive'}">
+                        ${question.difficulty}
+                    </span>
+                </td>
+                <td>${question.marks}</td>
+                <td class="action-buttons">
+                    <button class="action-btn btn-primary" onclick="editQuestion('${question.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn btn-danger" onclick="deleteQuestion('${question.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+                questionsTableBody.appendChild(row);
+            });
+        }
+
+        function populateQuestionForm() {
+            const subjectSelect = document.getElementById('questionSubject');
+            const classSelect = document.getElementById('questionClass');
+
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            classSelect.innerHTML = '<option value="">Select Class</option>';
+
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.subjectName;
+                subjectSelect.appendChild(option);
+            });
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classSelect.appendChild(option);
+            });
+        }
+
+        async function saveQuestion() {
+            const questionData = {
+                questionText: document.getElementById('questionText').value,
+                questionType: 'multiple_choice',
+                options: {
+                    A: document.getElementById('optionA').value,
+                    B: document.getElementById('optionB').value,
+                    C: document.getElementById('optionC').value,
+                    D: document.getElementById('optionD').value
+                },
+                correctAnswer: document.getElementById('correctOption').value,
+                subjectId: document.getElementById('questionSubject').value,
+                classId: document.getElementById('questionClass').value,
+                marks: parseInt(document.getElementById('questionMarks').value),
+                difficulty: document.getElementById('questionDifficulty').value,
+                createdBy: currentAdmin.userId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isActive: true
+            };
+
+            try {
+                await db.collection('questions').add(questionData);
+                hideModal('addQuestionModal');
+                document.getElementById('addQuestionForm').reset();
+                loadQuestionsData();
+                showNotification('Question created successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving question:', error);
+                showNotification('Error creating question. Please try again.', 'error');
+            }
+        }
+
+        function filterQuestions() {
+            const subjectFilter = document.getElementById('filterSubject').value;
+            const classFilter = document.getElementById('filterClass').value;
+            const difficultyFilter = document.getElementById('filterDifficulty').value;
+
+            const filteredQuestions = questions.filter(question => {
+                return (!subjectFilter || question.subjectId === subjectFilter) &&
+                    (!classFilter || question.classId === classFilter) &&
+                    (!difficultyFilter || question.difficulty === difficultyFilter);
+            });
+
+            populateQuestionsTable(filteredQuestions);
+        }
+
+        function updateFilterDropdowns() {
+            const subjectFilter = document.getElementById('filterSubject');
+            const classFilter = document.getElementById('filterClass');
+
+            subjectFilter.innerHTML = '<option value="">All Subjects</option>';
+            classFilter.innerHTML = '<option value="">All Classes</option>';
+
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.subjectName;
+                subjectFilter.appendChild(option);
+            });
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classFilter.appendChild(option);
+            });
+        }
+
+        // Bulk Upload Functions
+        function populateUploadForm() {
+            const uploadSubject = document.getElementById('uploadSubject');
+            const uploadClass = document.getElementById('uploadClass');
+
+            uploadSubject.innerHTML = '<option value="">Select Subject</option>';
+            uploadClass.innerHTML = '<option value="">Select Class</option>';
+
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.subjectName;
+                uploadSubject.appendChild(option);
+            });
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                uploadClass.appendChild(option);
+            });
+
+            // Reset uploaded questions
+            uploadedQuestions = [];
+            document.getElementById('filePreview').style.display = 'none';
+            document.getElementById('processUploadBtn').disabled = true;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('fileUploadArea').classList.add('active');
+        }
+
+        function handleFileDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('fileUploadArea').classList.remove('active');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleExcelFile(files[0]);
+            }
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleExcelFile(file);
+            }
+        }
+
+        function handleExcelFile(file) {
+            // Validate file type
+            const validTypes = [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel'
+            ];
+
+            if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/)) {
+                showNotification('Please upload a valid Excel file (.xlsx or .xls)', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Check if workbook has sheets
+                    if (workbook.SheetNames.length === 0) {
+                        showNotification('The Excel file is empty or corrupted', 'error');
+                        return;
+                    }
+
+                    // Assuming first sheet
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (jsonData.length === 0) {
+                        showNotification('No data found in the Excel sheet', 'error');
+                        return;
+                    }
+
+                    processExcelData(jsonData);
+                } catch (error) {
+                    console.error('Error processing Excel file:', error);
+                    showNotification('Error reading Excel file. Please check the format.', 'error');
+                }
+            };
+
+            reader.onerror = function () {
+                showNotification('Error reading file. Please try again.', 'error');
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processExcelData(data) {
+            uploadedQuestions = [];
+
+            data.forEach((row, index) => {
+                // Check for required columns with multiple possible header names
+                const questionText = row.Question || row.question || row['Question Text'] || '';
+                const optionA = row.Option_A || row.optionA || row['Choice A'] || row['Option A'] || '';
+                const optionB = row.Option_B || row.optionB || row['Choice B'] || row['Option B'] || '';
+                const optionC = row.Option_C || row.optionC || row['Choice C'] || row['Option C'] || '';
+                const optionD = row.Option_D || row.optionD || row['Choice D'] || row['Option D'] || '';
+                const correctAnswer = row.Correct_Answer || row.correctAnswer || row['Correct Option'] || row['Correct Answer'] || '';
+
+                // Validate required fields
+                if (questionText && optionA && optionB && optionC && optionD && correctAnswer) {
+                    // Validate correct answer format
+                    const validAnswers = ['A', 'B', 'C', 'D'];
+                    const cleanCorrectAnswer = correctAnswer.toString().toUpperCase().trim();
+
+                    if (validAnswers.includes(cleanCorrectAnswer)) {
+                        uploadedQuestions.push({
+                            questionText: questionText.toString().trim(),
+                            options: {
+                                A: optionA.toString().trim(),
+                                B: optionB.toString().trim(),
+                                C: optionC.toString().trim(),
+                                D: optionD.toString().trim()
+                            },
+                            correctAnswer: cleanCorrectAnswer,
+                            difficulty: row.Difficulty || row.difficulty || 'medium',
+                            marks: parseInt(row.Marks || row.marks || 1)
+                        });
+                    } else {
+                        console.warn(`Row ${index + 2}: Invalid correct answer "${correctAnswer}". Must be A, B, C, or D.`);
+                    }
+                } else {
+                    console.warn(`Row ${index + 2}: Missing required fields. Skipping.`);
+                }
+            });
+
+            if (uploadedQuestions.length === 0) {
+                showNotification('No valid questions found in the file. Please check the format.', 'error');
+                return;
+            }
+
+            // Show preview
+            showUploadPreview();
+        }
+
+        function showUploadPreview() {
+            const previewTableBody = document.getElementById('previewTableBody');
+            const filePreview = document.getElementById('filePreview');
+            const processBtn = document.getElementById('processUploadBtn');
+
+            if (uploadedQuestions.length === 0) {
+                previewTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No valid questions found in the file</td></tr>';
+                processBtn.disabled = true;
+                return;
+            }
+
+            previewTableBody.innerHTML = '';
+            uploadedQuestions.slice(0, 5).forEach((question, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${question.questionText.substring(0, 50)}${question.questionText.length > 50 ? '...' : ''}</td>
+                <td>${question.options.A.substring(0, 20)}${question.options.A.length > 20 ? '...' : ''}</td>
+                <td>${question.options.B.substring(0, 20)}${question.options.B.length > 20 ? '...' : ''}</td>
+                <td>${question.options.C.substring(0, 20)}${question.options.C.length > 20 ? '...' : ''}</td>
+                <td>${question.options.D.substring(0, 20)}${question.options.D.length > 20 ? '...' : ''}</td>
+                <td>${question.correctAnswer}</td>
+            `;
+                previewTableBody.appendChild(row);
+            });
+
+            if (uploadedQuestions.length > 5) {
+                const moreRow = document.createElement('tr');
+                moreRow.innerHTML = `<td colspan="6" style="text-align: center; color: #666;">... and ${uploadedQuestions.length - 5} more questions</td>`;
+                previewTableBody.appendChild(moreRow);
+            }
+
+            filePreview.style.display = 'block';
+            processBtn.disabled = false;
+
+            showNotification(`Successfully loaded ${uploadedQuestions.length} questions from the file`, 'success');
+        }
+
+        async function processBulkUpload() {
+            const subjectId = document.getElementById('uploadSubject').value;
+            const classId = document.getElementById('uploadClass').value;
+
+            if (!subjectId || !classId) {
+                showNotification('Please select both subject and class.', 'error');
+                return;
+            }
+
+            const processBtn = document.getElementById('processUploadBtn');
+            const originalText = processBtn.innerHTML;
+            processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            processBtn.disabled = true;
+
+            try {
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const [index, questionData] of uploadedQuestions.entries()) {
+                    try {
+                        const fullQuestionData = {
+                            ...questionData,
+                            questionType: 'multiple_choice',
+                            subjectId: subjectId,
+                            classId: classId,
+                            marks: questionData.marks || 1,
+                            difficulty: questionData.difficulty || 'medium',
+                            createdBy: currentAdmin.userId,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            isActive: true
+                        };
+
+                        await db.collection('questions').add(fullQuestionData);
+                        successCount++;
+                    } catch (error) {
+                        console.error(`Error saving question ${index + 1}:`, error);
+                        errorCount++;
+                    }
+                }
+
+                hideModal('bulkUploadModal');
+
+                if (errorCount === 0) {
+                    showNotification(`Successfully uploaded ${successCount} questions!`, 'success');
+                } else {
+                    showNotification(`Uploaded ${successCount} questions. ${errorCount} failed.`, 'warning');
+                }
+
+                // Reload questions data
+                loadQuestionsData();
+
+            } catch (error) {
+                console.error('Error in bulk upload:', error);
+                showNotification('Error processing bulk upload. Please try again.', 'error');
+            } finally {
+                processBtn.innerHTML = originalText;
+                processBtn.disabled = false;
+            }
+        }
+
+        // Exams Functions
+        async function loadExamsData() {
+            try {
+                const examsSnapshot = await db.collection('exams').get();
+                exams = examsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                populateExamsTable(exams);
+            } catch (error) {
+                console.error('Error loading exams data:', error);
+            }
+        }
+
+        function populateExamsTable(exams) {
+            const examsTableBody = document.getElementById('examsTableBody');
+
+            if (exams.length === 0) {
+                examsTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No exams found</td></tr>';
+                return;
+            }
+
+            examsTableBody.innerHTML = '';
+            exams.forEach(exam => {
+                const subject = subjects.find(s => s.id === exam.subjectId);
+                const cls = classes.find(c => c.id === exam.classId);
+                const now = new Date();
+                const availableFrom = exam.availableFrom?.toDate();
+                const availableUntil = exam.availableUntil?.toDate();
+
+                let status = 'Upcoming';
+                let statusClass = 'status-active';
+
+                if (now > availableUntil) {
+                    status = 'Expired';
+                    statusClass = 'status-inactive';
+                } else if (now >= availableFrom && now <= availableUntil) {
+                    status = 'Active';
+                    statusClass = 'status-success';
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${exam.examTitle}</td>
+                <td>${subject?.subjectName || exam.subjectId}</td>
+                <td>${cls?.className || exam.classId}</td>
+                <td>${exam.duration} mins</td>
+                <td>${exam.totalQuestions}</td>
+                <td>
+                    <span class="status-badge ${statusClass}">${status}</span>
+                </td>
+                <td class="action-buttons">
+                    <button class="action-btn btn-primary" onclick="editExam('${exam.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn btn-danger" onclick="deleteExam('${exam.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn btn-success" onclick="viewExamResults('${exam.id}')">
+                        <i class="fas fa-chart-bar"></i>
+                    </button>
+                </td>
+            `;
+                examsTableBody.appendChild(row);
+            });
+        }
+
+        function populateExamForm() {
+            const subjectSelect = document.getElementById('examSubject');
+            const classSelect = document.getElementById('examClass');
+
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            classSelect.innerHTML = '<option value="">Select Class</option>';
+
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.subjectName;
+                subjectSelect.appendChild(option);
+            });
+
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classSelect.appendChild(option);
+            });
+
+            // Set default dates
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            document.getElementById('examAvailableFrom').value = formatDateTimeLocal(now);
+            document.getElementById('examAvailableUntil').value = formatDateTimeLocal(tomorrow);
+        }
+
+        function formatDateTimeLocal(date) {
+            return date.toISOString().slice(0, 16);
+        }
+
+        async function saveExam() {
+            const examData = {
+                examTitle: document.getElementById('examTitle').value,
+                description: document.getElementById('examDescription').value,
+                subjectId: document.getElementById('examSubject').value,
+                classId: document.getElementById('examClass').value,
+                duration: parseInt(document.getElementById('examDuration').value),
+                totalQuestions: parseInt(document.getElementById('examTotalQuestions').value),
+                totalMarks: parseInt(document.getElementById('examTotalQuestions').value), // 1 mark per question
+                shuffleQuestions: document.getElementById('shuffleQuestions').checked,
+                allowMultipleAttempts: document.getElementById('allowMultipleAttempts').checked,
+                maxAttempts: document.getElementById('allowMultipleAttempts').checked ?
+                    parseInt(document.getElementById('maxAttempts').value) : 1,
+                availableFrom: firebase.firestore.Timestamp.fromDate(
+                    new Date(document.getElementById('examAvailableFrom').value)
+                ),
+                availableUntil: firebase.firestore.Timestamp.fromDate(
+                    new Date(document.getElementById('examAvailableUntil').value)
+                ),
+                isActive: true,
+                createdBy: currentAdmin.userId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('exams').add(examData);
+                hideModal('createExamModal');
+                document.getElementById('createExamForm').reset();
+                loadExamsData();
+                showNotification('Exam created successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving exam:', error);
+                showNotification('Error creating exam. Please try again.', 'error');
+            }
+        }
+
+        // Results & Analytics Functions
+        async function loadResultsData() {
+            try {
+                const [examsSnapshot, classesSnapshot] = await Promise.all([
+                    db.collection('exams').get(),
+                    db.collection('classes').get()
+                ]);
+
+                populateResultsDropdowns(examsSnapshot, classesSnapshot);
+            } catch (error) {
+                console.error('Error loading results data:', error);
+            }
+        }
+
+        function populateResultsDropdowns(examsSnapshot, classesSnapshot) {
+            const examSelect = document.getElementById('resultsExam');
+            const classSelect = document.getElementById('resultsClass');
+
+            examSelect.innerHTML = '<option value="">Select Exam</option>';
+            classSelect.innerHTML = '<option value="">All Classes</option>';
+
+            examsSnapshot.forEach(doc => {
+                const exam = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = `${exam.examTitle} (${exam.subjectId || 'No Subject'})`;
+                examSelect.appendChild(option);
+            });
+
+            classesSnapshot.forEach(doc => {
+                const cls = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = cls.className;
+                classSelect.appendChild(option);
+            });
+        }
+
+        async function generateReport() {
+            const examId = document.getElementById('resultsExam').value;
+            const classId = document.getElementById('resultsClass').value;
+
+            if (!examId) {
+                showNotification('Please select an exam to generate report.', 'error');
+                return;
+            }
+
+            const generateBtn = document.getElementById('generateReportBtn');
+            const originalText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            generateBtn.disabled = true;
+
+            try {
+                // First, get the exam details to understand the structure
+                const examDoc = await db.collection('exams').doc(examId).get();
+                if (!examDoc.exists) {
+                    showNotification('Exam not found!', 'error');
+                    return;
+                }
+
+                const exam = examDoc.data();
+                console.log('Exam found:', exam);
+
+                // Get results - try different query approaches
+                let resultsSnapshot;
+                let allResults = [];
+
+                // Try multiple query approaches to find results
+                try {
+                    // Approach 1: Direct examId match
+                    resultsSnapshot = await db.collection('results')
+                        .where('examId', '==', examId)
+                        .get();
+                    console.log('Results found with direct examId:', resultsSnapshot.size);
+                } catch (error) {
+                    console.log('Direct examId query failed:', error);
+                }
+
+                // If no results found with direct examId, try examTitle
+                if (!resultsSnapshot || resultsSnapshot.empty) {
+                    try {
+                        resultsSnapshot = await db.collection('results')
+                            .where('examTitle', '==', exam.examTitle)
+                            .get();
+                        console.log('Results found with examTitle:', resultsSnapshot.size);
+                    } catch (error) {
+                        console.log('examTitle query failed:', error);
+                    }
+                }
+
+                // If still no results, get all results and filter manually
+                if (!resultsSnapshot || resultsSnapshot.empty) {
+                    try {
+                        resultsSnapshot = await db.collection('results').get();
+                        console.log('All results:', resultsSnapshot.size);
+
+                        // Filter manually by examId or examTitle
+                        allResults = resultsSnapshot.docs
+                            .map(doc => ({ id: doc.id, ...doc.data() }))
+                            .filter(result =>
+                                result.examId === examId ||
+                                result.examTitle === exam.examTitle
+                            );
+                        console.log('Filtered results:', allResults.length);
+                    } catch (error) {
+                        console.log('Manual filtering failed:', error);
+                    }
+                } else {
+                    allResults = resultsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                }
+
+                console.log('Final results to process:', allResults);
+
+                // If a specific class is selected, filter results by students in that class
+                if (classId && allResults.length > 0) {
+                    console.log('Filtering by class:', classId);
+
+                    // Get students in the selected class
+                    const studentsSnapshot = await db.collection('users')
+                        .where('role', '==', 'student')
+                        .where('class', '==', classId)
+                        .get();
+
+                    const studentIds = studentsSnapshot.docs.map(doc => doc.id);
+                    console.log('Students in class:', studentIds);
+
+                    // Filter results to only include students from the selected class
+                    allResults = allResults.filter(result => {
+                        const isInClass = studentIds.includes(result.studentId);
+                        console.log(`Student ${result.studentId} in class:`, isInClass);
+                        return isInClass;
+                    });
+                }
+
+                results = allResults;
+                console.log('Final results after class filter:', results);
+
+                if (results.length === 0) {
+                    showNotification('No results found for the selected criteria.', 'info');
+                    // Clear the display
+                    document.getElementById('resultsTableBody').innerHTML =
+                        '<tr><td colspan="7" style="text-align: center; padding: 20px;">No results found</td></tr>';
+                    document.getElementById('performanceChart').innerHTML =
+                        '<p style="text-align: center; color: #666;">No data available for chart</p>';
+                    return;
+                }
+
+                await displayResultsReport(results);
+                generatePerformanceChart(results);
+
+                showNotification(`Report generated: ${results.length} result(s) found`, 'success');
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+                showNotification('Error generating report: ' + error.message, 'error');
+            } finally {
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+            }
+        }
+
+        async function displayResultsReport(results) {
+            const resultsTableBody = document.getElementById('resultsTableBody');
+
+            if (results.length === 0) {
+                resultsTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No results found for the selected criteria</td></tr>';
+                return;
+            }
+
+            resultsTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Loading results...</td></tr>';
+
+            // Sort by percentage (descending)
+            results.sort((a, b) => (b.percentage || 0) - (a.percentage || 0));
+
+            let tableHTML = '';
+
+            for (const result of results) {
+                try {
+                    // Get student details
+                    const studentSnapshot = await db.collection('users').doc(result.studentId).get();
+                    const student = studentSnapshot.exists ? studentSnapshot.data() : null;
+
+                    // Calculate values with fallbacks
+                    const score = result.score || 0;
+                    const totalQuestions = result.totalQuestions || result.questions || 0;
+                    const percentage = result.percentage || (totalQuestions > 0 ? ((score / totalQuestions) * 100) : 0);
+                    const timeSpent = result.timeSpent || 0;
+                    const submittedAt = result.submittedAt ? result.submittedAt.toDate() : new Date();
+
+                    tableHTML += `
+                <tr>
+                    <td>${student ? `${student.firstName} ${student.lastName}` : 'Student Not Found'}</td>
+                    <td>${student?.admissionNumber || result.studentId || 'N/A'}</td>
+                    <td>${score}/${totalQuestions}</td>
+                    <td>${percentage.toFixed(1)}%</td>
+                    <td>${calculateGrade(percentage)}</td>
+                    <td>${Math.floor(timeSpent / 60)}:${(timeSpent % 60).toString().padStart(2, '0')}</td>
+                    <td>${submittedAt.toLocaleDateString()}</td>
+                </tr>
+            `;
+                } catch (error) {
+                    console.error('Error loading student data:', error, result);
+                    tableHTML += `
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #dc3545;">
+                        Error loading student data for ${result.studentId}
+                    </td>
+                </tr>
+            `;
+                }
+            }
+
+            resultsTableBody.innerHTML = tableHTML;
+        }
+        // Add this function to help debug - call it from browser console if needed
+        async function debugResults() {
+            console.log('=== DEBUG RESULTS ===');
+
+            // Check all results in database
+            const allResults = await db.collection('results').get();
+            console.log('Total results in database:', allResults.size);
+
+            allResults.forEach(doc => {
+                console.log('Result:', doc.id, doc.data());
+            });
+
+            // Check all exams
+            const allExams = await db.collection('exams').get();
+            console.log('Total exams in database:', allExams.size);
+
+            allExams.forEach(doc => {
+                console.log('Exam:', doc.id, doc.data());
+            });
+        }
+
+        function generatePerformanceChart(results) {
+            const chartContainer = document.getElementById('performanceChart');
+
+            if (results.length === 0) {
+                chartContainer.innerHTML = '<p>No data available for chart</p>';
+                return;
+            }
+
+            // Simple chart using HTML/CSS (in a real app, use Chart.js or similar)
+            const gradeCounts = {
+                A: 0, B: 0, C: 0, D: 0, F: 0
+            };
+
+            results.forEach(result => {
+                const grade = calculateGrade(result.percentage);
+                gradeCounts[grade]++;
+            });
+
+            const total = results.length;
+            const chartHTML = `
+            <div style="display: flex; height: 100%; align-items: end; gap: 10px; padding: 20px;">
+                ${Object.entries(gradeCounts).map(([grade, count]) => `
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="background: var(--${getGradeColor(grade)}); width: 80%; height: ${(count / total) * 200}px; border-radius: 5px 5px 0 0;"></div>
+                        <div style="margin-top: 10px; font-weight: bold;">${grade}</div>
+                        <div style="font-size: 0.8em; color: #666;">${count}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+            chartContainer.innerHTML = chartHTML;
+        }
+
+        function calculateGrade(percentage) {
+            if (!currentSettings?.gradingSystem) return 'F';
+
+            const { gradingSystem } = currentSettings;
+            if (percentage >= gradingSystem.A.min) return 'A';
+            if (percentage >= gradingSystem.B.min) return 'B';
+            if (percentage >= gradingSystem.C.min) return 'C';
+            if (percentage >= gradingSystem.D.min) return 'D';
+            return 'F';
+        }
+
+        function getGradeColor(grade) {
+            const colors = {
+                A: 'success',
+                B: 'accent',
+                C: 'warning',
+                D: 'secondary',
+                F: 'danger'
+            };
+            return colors[grade] || 'danger';
+        }
+
+        // Settings Functions
+        function loadSettingsData() {
+            if (currentSettings) {
+                populateSettingsForm();
+            }
+        }
+
+        function populateSettingsForm() {
+            if (!currentSettings) return;
+
+            // General settings
+            document.getElementById('schoolName').value = currentSettings.schoolName || '';
+            document.getElementById('academicYear').value = currentSettings.academicYear || '';
+            document.getElementById('academicTerm').value = currentSettings.academicTerm || 'First Term';
+
+            // Grading system
+            if (currentSettings.gradingSystem) {
+                document.getElementById('gradeAMin').value = currentSettings.gradingSystem.A.min;
+                document.getElementById('gradeBMin').value = currentSettings.gradingSystem.B.min;
+                document.getElementById('gradeCMin').value = currentSettings.gradingSystem.C.min;
+                document.getElementById('gradeDMin').value = currentSettings.gradingSystem.D.min;
+                document.getElementById('gradeFMin').value = currentSettings.gradingSystem.F.min;
+            }
+        }
+
+        async function saveGeneralSettings(e) {
+            e.preventDefault();
+
+            const settingsData = {
+                schoolName: document.getElementById('schoolName').value,
+                academicYear: document.getElementById('academicYear').value,
+                academicTerm: document.getElementById('academicTerm').value,
+                ...currentSettings
+            };
+
+            try {
+                await db.collection('settings').doc('school_settings').set(settingsData, { merge: true });
+                currentSettings = settingsData;
+                showNotification('General settings saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving general settings:', error);
+                showNotification('Error saving settings. Please try again.', 'error');
+            }
+        }
+
+        async function saveGradingSettings(e) {
+            e.preventDefault();
+
+            const gradingSystem = {
+                A: { min: parseInt(document.getElementById('gradeAMin').value), max: 100 },
+                B: { min: parseInt(document.getElementById('gradeBMin').value), max: parseInt(document.getElementById('gradeAMin').value) - 1 },
+                C: { min: parseInt(document.getElementById('gradeCMin').value), max: parseInt(document.getElementById('gradeBMin').value) - 1 },
+                D: { min: parseInt(document.getElementById('gradeDMin').value), max: parseInt(document.getElementById('gradeCMin').value) - 1 },
+                F: { min: parseInt(document.getElementById('gradeFMin').value), max: parseInt(document.getElementById('gradeDMin').value) - 1 }
+            };
+
+            const settingsData = {
+                gradingSystem,
+                ...currentSettings
+            };
+
+            try {
+                await db.collection('settings').doc('school_settings').set(settingsData, { merge: true });
+                currentSettings = settingsData;
+                showNotification('Grading system saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving grading system:', error);
+                showNotification('Error saving grading system. Please try again.', 'error');
+            }
+        }
+
+        // Utility Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+
+            const bgColors = {
+                success: '#28a745',
+                error: '#dc3545',
+                info: '#17a2b8',
+                warning: '#ffc107'
+            };
+
+            notification.style.backgroundColor = bgColors[type] || bgColors.info;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 5000);
+        }
+
+        // Functions for edit operations
+        async function editSubject(subjectId) {
+            try {
+                const subjectDoc = await db.collection('subjects').doc(subjectId).get();
+                if (!subjectDoc.exists) {
+                    showNotification('Subject not found!', 'error');
+                    return;
+                }
+
+                const subject = subjectDoc.data();
+
+                // Populate the form
+                document.getElementById('subjectName').value = subject.subjectName || '';
+                document.getElementById('subjectCode').value = subject.subjectCode || '';
+                document.getElementById('subjectDescription').value = subject.description || '';
+
+                // Change modal title and button
+                document.querySelector('#addSubjectModal .modal-title').textContent = 'Edit Subject';
+                document.getElementById('saveSubjectBtn').textContent = 'Update Subject';
+
+                // Store the subject ID for updating
+                document.getElementById('saveSubjectBtn').setAttribute('data-edit-id', subjectId);
+
+                showModal('addSubjectModal');
+            } catch (error) {
+                console.error('Error loading subject for edit:', error);
+                showNotification('Error loading subject data.', 'error');
+            }
+        }
+
+        async function editClass(classId) {
+            try {
+                const classDoc = await db.collection('classes').doc(classId).get();
+                if (!classDoc.exists) {
+                    showNotification('Class not found!', 'error');
+                    return;
+                }
+
+                const cls = classDoc.data();
+
+                // Populate the form
+                document.getElementById('className').value = cls.className || '';
+                document.getElementById('classCode').value = cls.classCode || '';
+                document.getElementById('classLevel').value = cls.level || '';
+                document.getElementById('classDescription').value = cls.description || '';
+
+                // Populate teachers dropdown
+                const teacherSelect = document.getElementById('classTeacher');
+                teacherSelect.innerHTML = '<option value="">No Class Teacher</option>';
+
+                const staffSnapshot = await db.collection('users').where('role', '==', 'staff').get();
+                staffSnapshot.forEach(doc => {
+                    const staff = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${staff.firstName} ${staff.lastName} (${staff.staffId})`;
+                    if (cls.classTeacher === doc.id) {
+                        option.selected = true;
+                    }
+                    teacherSelect.appendChild(option);
+                });
+
+                // Change modal title and button
+                document.querySelector('#addClassModal .modal-title').textContent = 'Edit Class';
+                document.getElementById('saveClassBtn').textContent = 'Update Class';
+
+                // Store the class ID for updating
+                document.getElementById('saveClassBtn').setAttribute('data-edit-id', classId);
+
+                showModal('addClassModal');
+            } catch (error) {
+                console.error('Error loading class for edit:', error);
+                showNotification('Error loading class data.', 'error');
+            }
+        }
+
+        async function editQuestion(questionId) {
+            try {
+                const questionDoc = await db.collection('questions').doc(questionId).get();
+                if (!questionDoc.exists) {
+                    showNotification('Question not found!', 'error');
+                    return;
+                }
+
+                const question = questionDoc.data();
+
+                // Load subjects and classes first
+                await loadSubjectsAndClasses();
+
+                // Populate the form
+                document.getElementById('questionText').value = question.questionText || '';
+                document.getElementById('questionSubject').value = question.subjectId || '';
+                document.getElementById('questionClass').value = question.classId || '';
+                document.getElementById('questionMarks').value = question.marks || 1;
+                document.getElementById('questionDifficulty').value = question.difficulty || 'medium';
+                document.getElementById('optionA').value = question.options?.A || '';
+                document.getElementById('optionB').value = question.options?.B || '';
+                document.getElementById('optionC').value = question.options?.C || '';
+                document.getElementById('optionD').value = question.options?.D || '';
+                document.getElementById('correctOption').value = question.correctAnswer || 'A';
+
+                // Change modal title and button
+                document.querySelector('#addQuestionModal .modal-title').textContent = 'Edit Question';
+                document.getElementById('saveQuestionBtn').textContent = 'Update Question';
+
+                // Store the question ID for updating
+                document.getElementById('saveQuestionBtn').setAttribute('data-edit-id', questionId);
+
+                showModal('addQuestionModal');
+            } catch (error) {
+                console.error('Error loading question for edit:', error);
+                showNotification('Error loading question data.', 'error');
+            }
+        }
+
+        async function editExam(examId) {
+            try {
+                const examDoc = await db.collection('exams').doc(examId).get();
+                if (!examDoc.exists) {
+                    showNotification('Exam not found!', 'error');
+                    return;
+                }
+
+                const exam = examDoc.data();
+
+                // Load subjects and classes first
+                await loadSubjectsAndClasses();
+
+                // Populate the form
+                document.getElementById('examTitle').value = exam.examTitle || '';
+                document.getElementById('examDescription').value = exam.description || '';
+                document.getElementById('examSubject').value = exam.subjectId || '';
+                document.getElementById('examClass').value = exam.classId || '';
+                document.getElementById('examDuration').value = exam.duration || 60;
+                document.getElementById('examTotalQuestions').value = exam.totalQuestions || 20;
+                document.getElementById('shuffleQuestions').checked = exam.shuffleQuestions !== false;
+                document.getElementById('allowMultipleAttempts').checked = exam.allowMultipleAttempts || false;
+                document.getElementById('maxAttempts').value = exam.maxAttempts || 1;
+
+                // Set dates
+                if (exam.availableFrom) {
+                    document.getElementById('examAvailableFrom').value = formatDateTimeLocal(exam.availableFrom.toDate());
+                }
+                if (exam.availableUntil) {
+                    document.getElementById('examAvailableUntil').value = formatDateTimeLocal(exam.availableUntil.toDate());
+                }
+
+                // Toggle max attempts container
+                document.getElementById('maxAttemptsContainer').style.display =
+                    exam.allowMultipleAttempts ? 'block' : 'none';
+
+                // Change modal title and button
+                document.querySelector('#createExamModal .modal-title').textContent = 'Edit Exam';
+                document.getElementById('saveExamBtn').textContent = 'Update Exam';
+
+                // Store the exam ID for updating
+                document.getElementById('saveExamBtn').setAttribute('data-edit-id', examId);
+
+                showModal('createExamModal');
+            } catch (error) {
+                console.error('Error loading exam for edit:', error);
+                showNotification('Error loading exam data.', 'error');
+            }
+        }
+
+        function deleteQuestion(questionId) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                db.collection('questions').doc(questionId).delete()
+                    .then(() => {
+                        loadQuestionsData();
+                        showNotification('Question deleted successfully!', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting question:', error);
+                        showNotification('Error deleting question.', 'error');
+                    });
+            }
+        }
+
+        function deleteExam(examId) {
+            if (confirm('Are you sure you want to delete this exam?')) {
+                db.collection('exams').doc(examId).delete()
+                    .then(() => {
+                        loadExamsData();
+                        showNotification('Exam deleted successfully!', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting exam:', error);
+                        showNotification('Error deleting exam.', 'error');
+                    });
+            }
+        }
+
+        function viewExamResults(examId) {
+            document.getElementById('resultsExam').value = examId;
+            document.querySelector('.menu-item[data-section="results"]').click();
+            setTimeout(() => {
+                generateReport();
+            }, 500);
+        }
+        // Add this function to your JavaScript
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleButton = passwordInput.nextElementSibling;
+            const icon = toggleButton.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        function toggleSelectAllStudents(checkbox) {
+            const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+            studentCheckboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+                const studentId = cb.getAttribute('data-student-id');
+                if (checkbox.checked) {
+                    selectedStudents.add(studentId);
+                } else {
+                    selectedStudents.delete(studentId);
+                }
+            });
+            updateSelectedStudentsDisplay();
+        }
+
+        function toggleStudentSelection(checkbox) {
+            const studentId = checkbox.getAttribute('data-student-id');
+            if (checkbox.checked) {
+                selectedStudents.add(studentId);
+            } else {
+                selectedStudents.delete(studentId);
+            }
+
+            // Update select all checkbox
+            const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+            const allChecked = studentCheckboxes.length > 0 && Array.from(studentCheckboxes).every(cb => cb.checked);
+            document.getElementById('selectAllStudents').checked = allChecked;
+
+            updateSelectedStudentsDisplay();
+        }
+
+        function updateSelectedStudentsDisplay() {
+            const countElement = document.getElementById('selectedStudentsCount');
+            const listElement = document.getElementById('selectedStudentsList');
+
+            countElement.textContent = selectedStudents.size;
+
+            if (selectedStudents.size === 0) {
+                listElement.innerHTML = '<p style="color: #666; text-align: center; margin: 0;">No students selected</p>';
+                return;
+            }
+
+            let listHTML = '';
+            selectedStudents.forEach(studentId => {
+                const studentRow = document.querySelector(`.student-checkbox[data-student-id="${studentId}"]`).closest('tr');
+                const admissionNo = studentRow.cells[1].textContent;
+                const studentName = studentRow.cells[2].textContent;
+                const currentClass = studentRow.cells[3].textContent;
+
+                listHTML += `
+            <div style="display: flex; justify-content: between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                <div style="flex: 1;">
+                    <strong>${studentName}</strong> (${admissionNo})
+                </div>
+                <div style="color: #666; font-size: 0.9em;">
+                    Current: ${currentClass}
+                </div>
+            </div>
+        `;
+            });
+
+            listElement.innerHTML = listHTML;
+        }
+
+        function showTransferModal() {
+            if (selectedStudents.size === 0) {
+                showNotification('Please select at least one student to transfer.', 'warning');
+                return;
+            }
+
+            // Populate class dropdown
+            const classSelect = document.getElementById('transferToClass');
+            classSelect.innerHTML = '<option value="">Select Target Class</option>';
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classSelect.appendChild(option);
+            });
+
+            // Set default date to today
+            document.getElementById('transferEffectiveDate').valueAsDate = new Date();
+
+            showModal('transferStudentsModal');
+        }
+
+        async function transferStudents() {
+            const targetClassId = document.getElementById('transferToClass').value;
+            const effectiveDate = document.getElementById('transferEffectiveDate').value;
+            const notes = document.getElementById('transferNotes').value;
+
+            if (!targetClassId) {
+                showNotification('Please select a target class.', 'error');
+                return;
+            }
+
+            if (!effectiveDate) {
+                showNotification('Please select an effective date.', 'error');
+                return;
+            }
+
+            const targetClass = classes.find(c => c.id === targetClassId);
+            const transferBtn = document.getElementById('confirmTransferBtn');
+            const originalText = transferBtn.innerHTML;
+
+            transferBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transferring...';
+            transferBtn.disabled = true;
+
+            try {
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const studentId of selectedStudents) {
+                    try {
+                        // Update student class
+                        await db.collection('users').doc(studentId).update({
+                            class: targetClassId,
+                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        // Create transfer record
+                        const transferRecord = {
+                            studentId: studentId,
+                            fromClass: document.querySelector(`.student-checkbox[data-student-id="${studentId}"]`).closest('tr').cells[3].textContent,
+                            toClass: targetClass.className,
+                            effectiveDate: new Date(effectiveDate),
+                            notes: notes,
+                            transferredBy: currentAdmin.userId,
+                            transferredAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+
+                        await db.collection('student_transfers').add(transferRecord);
+                        successCount++;
+
+                    } catch (error) {
+                        console.error(`Error transferring student ${studentId}:`, error);
+                        errorCount++;
+                    }
+                }
+
+                hideModal('transferStudentsModal');
+
+                if (errorCount === 0) {
+                    showNotification(`Successfully transferred ${successCount} student(s) to ${targetClass.className}!`, 'success');
+                } else {
+                    showNotification(`Transferred ${successCount} student(s), ${errorCount} failed.`, 'warning');
+                }
+
+                // Clear selection and reload data
+                selectedStudents.clear();
+                document.getElementById('selectAllStudents').checked = false;
+                loadStudentData();
+
+            } catch (error) {
+                console.error('Error in transfer process:', error);
+                showNotification('Error transferring students. Please try again.', 'error');
+            } finally {
+                transferBtn.innerHTML = originalText;
+                transferBtn.disabled = false;
+            }
+        }
+
+        // Update the populateStudentTable function to include checkboxes
+        function populateStudentTable(studentsSnapshot) {
+            const studentTableBody = document.getElementById('studentTableBody');
+
+            if (studentsSnapshot.empty) {
+                studentTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No students found</td></tr>';
+                return;
+            }
+
+            studentTableBody.innerHTML = '';
+            studentsSnapshot.forEach(doc => {
+                const student = doc.data();
+                const studentClass = classes.find(c => c.id === student.class);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>
+                <input type="checkbox" class="student-checkbox" data-student-id="${doc.id}" onchange="toggleStudentSelection(this)">
+            </td>
+            <td>${student.admissionNumber}</td>
+            <td>${student.firstName} ${student.lastName}</td>
+            <td>${studentClass ? studentClass.className : student.class}</td>
+            <td>
+                <span class="status-badge ${student.isActive ? 'status-active' : 'status-inactive'}">
+                    ${student.isActive ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td class="action-buttons">
+                <button class="action-btn btn-warning btn-sm" onclick="transferSingleStudent('${doc.id}')" title="Transfer Student">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+                <button class="action-btn ${student.isActive ? 'btn-danger' : 'btn-success'}" 
+                        onclick="toggleStudentStatus('${doc.id}', ${!student.isActive})">
+                    <i class="fas ${student.isActive ? 'fa-times' : 'fa-check'}"></i>
+                    ${student.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+            </td>
+        `;
+                studentTableBody.appendChild(row);
+            });
+        }
+
+        // Function to transfer single student
+        function transferSingleStudent(studentId) {
+            selectedStudents.clear();
+            selectedStudents.add(studentId);
+            showTransferModal();
+        }
+        // Add to setupEventListeners function
+        document.getElementById('assignTeacherBtn').addEventListener('click', showAssignTeacherModal);
+        document.getElementById('saveAssignTeacherBtn').addEventListener('click', assignClassTeacher);
+
+        // Function to show assign teacher modal
+        async function showAssignTeacherModal() {
+            await loadSubjectsAndClasses();
+            await loadStaffData();
+
+            const classSelect = document.getElementById('assignClassSelect');
+            const teacherSelect = document.getElementById('assignTeacherSelect');
+
+            // Populate classes
+            classSelect.innerHTML = '<option value="">Select Class</option>';
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.className;
+                classSelect.appendChild(option);
+            });
+
+            // Populate teachers (staff with role 'staff')
+            teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
+            const staffSnapshot = await db.collection('users').where('role', '==', 'staff').get();
+            staffSnapshot.forEach(doc => {
+                const staff = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = `${staff.firstName} ${staff.lastName} (${staff.staffId})`;
+                teacherSelect.appendChild(option);
+            });
+
+            showModal('assignTeacherModal');
+        }
+
+        // Function to assign class teacher
+        async function assignClassTeacher() {
+            const classId = document.getElementById('assignClassSelect').value;
+            const teacherId = document.getElementById('assignTeacherSelect').value;
+            const role = document.getElementById('teacherRole').value;
+
+            if (!classId || !teacherId) {
+                showNotification('Please select both class and teacher.', 'error');
+                return;
+            }
+
+            try {
+                // Update class with teacher assignment
+                await db.collection('classes').doc(classId).update({
+                    classTeacher: teacherId,
+                    teacherRole: role,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Update teacher's assigned classes
+                const classDoc = await db.collection('classes').doc(classId).get();
+                const classData = classDoc.data();
+
+                const teacherRef = db.collection('users').doc(teacherId);
+                const teacherDoc = await teacherRef.get();
+                const teacherData = teacherDoc.data();
+
+                let assignedClasses = teacherData.assignedClasses || [];
+                if (!assignedClasses.includes(classId)) {
+                    assignedClasses.push(classId);
+                }
+
+                await teacherRef.update({
+                    assignedClasses: assignedClasses,
+                    isClassTeacher: true,
+                    classTeacherRole: role
+                });
+
+                hideModal('assignTeacherModal');
+                loadClassesData();
+                showNotification('Teacher assigned to class successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error assigning teacher:', error);
+                showNotification('Error assigning teacher to class.', 'error');
+            }
+        }
+
+        // Update populateClassesTable function to show class teacher
+        async function populateClassesTable(classesSnapshot) {
+            const classesTableBody = document.getElementById('classesTableBody');
+
+            if (classesSnapshot.empty) {
+                classesTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No classes found</td></tr>';
+                return;
+            }
+
+            classesTableBody.innerHTML = '';
+
+            // Get student count for each class
+            const studentsSnapshot = await db.collection('users')
+                .where('role', '==', 'student')
+                .get();
+
+            const studentsByClass = {};
+            studentsSnapshot.forEach(doc => {
+                const student = doc.data();
+                if (student.class) {
+                    if (!studentsByClass[student.class]) {
+                        studentsByClass[student.class] = 0;
+                    }
+                    studentsByClass[student.class]++;
+                }
+            });
+
+            // Get all staff for teacher names
+            const staffSnapshot = await db.collection('users')
+                .where('role', '==', 'staff')
+                .get();
+
+            const staffMap = {};
+            staffSnapshot.forEach(doc => {
+                staffMap[doc.id] = doc.data();
+            });
+
+            classesSnapshot.forEach(doc => {
+                const cls = doc.data();
+                const studentCount = studentsByClass[doc.id] || 0;
+                const classTeacher = cls.classTeacher ? staffMap[cls.classTeacher] : null;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${cls.className}</td>
+            <td>${cls.classCode}</td>
+            <td>
+                <span class="status-badge ${getLevelBadgeClass(cls.level)}">
+                    ${cls.level || 'Not Set'}
+                </span>
+            </td>
+            <td>
+                <span class="status-badge ${studentCount > 0 ? 'status-active' : 'status-inactive'}">
+                    ${studentCount} student(s)
+                </span>
+            </td>
+            <td>
+                ${classTeacher ?
+                        `<span class="status-badge status-active">
+                        ${classTeacher.firstName} ${classTeacher.lastName}
+                        ${cls.teacherRole === 'class_teacher' ? '(Main)' : '(Assistant)'}
+                    </span>` :
+                        '<span class="status-badge status-inactive">No Teacher</span>'
+                    }
+            </td>
+            <td>${cls.description || '-'}</td>
+            <td class="action-buttons">
+                <button class="action-btn btn-primary" onclick="editClass('${doc.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn btn-success" onclick="assignTeacherToClass('${doc.id}')" title="Assign Teacher">
+                    <i class="fas fa-user-plus"></i>
+                </button>
+                <button class="action-btn btn-info" onclick="viewClassDetails('${doc.id}')" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn btn-warning" onclick="manageClassStudents('${doc.id}')" title="Manage Students">
+                    <i class="fas fa-users"></i>
+                </button>
+            </td>
+        `;
+                classesTableBody.appendChild(row);
+            });
+        }
+
+        // Function to assign teacher to specific class
+        async function assignTeacherToClass(classId) {
+            await loadStaffData();
+
+            const classDoc = await db.collection('classes').doc(classId).get();
+            const classData = classDoc.data();
+
+            const teacherSelect = document.getElementById('assignTeacherSelect');
+            const classSelect = document.getElementById('assignClassSelect');
+
+            // Set the class
+            classSelect.value = classId;
+
+            // Populate teachers
+            teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
+            const staffSnapshot = await db.collection('users').where('role', '==', 'staff').get();
+            staffSnapshot.forEach(doc => {
+                const staff = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = `${staff.firstName} ${staff.lastName} (${staff.staffId})`;
+                // Pre-select current teacher if exists
+                if (classData.classTeacher === doc.id) {
+                    option.selected = true;
+                }
+                teacherSelect.appendChild(option);
+            });
+
+            // Set current role if exists
+            if (classData.teacherRole) {
+                document.getElementById('teacherRole').value = classData.teacherRole;
+            }
+
+            showModal('assignTeacherModal');
+        }
+
+        // Update saveClass function to include teacher assignment
+        async function saveClass() {
+            const classData = {
+                className: document.getElementById('className').value,
+                classCode: document.getElementById('classCode').value,
+                level: document.getElementById('classLevel').value,
+                description: document.getElementById('classDescription').value,
+                classTeacher: document.getElementById('classTeacher').value || null,
+                isActive: true,
+                createdBy: currentAdmin.userId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('classes').add(classData);
+
+                // If teacher is assigned, update teacher's record
+                if (classData.classTeacher) {
+                    const teacherRef = db.collection('users').doc(classData.classTeacher);
+                    const teacherDoc = await teacherRef.get();
+                    const teacherData = teacherDoc.data();
+
+                    let assignedClasses = teacherData.assignedClasses || [];
+                    // We'll update this after getting the class ID
+                    const newClassRef = await db.collection('classes').add(classData);
+                    assignedClasses.push(newClassRef.id);
+
+                    await teacherRef.update({
+                        assignedClasses: assignedClasses,
+                        isClassTeacher: true
+                    });
+                }
+
+                hideModal('addClassModal');
+                document.getElementById('addClassForm').reset();
+                loadClassesData();
+                showNotification('Class created successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving class:', error);
+                showNotification('Error creating class. Please try again.', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

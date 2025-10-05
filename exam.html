@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +35,7 @@
             color: var(--text-color);
             min-height: 100vh;
         }
-        
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -115,7 +116,7 @@
             border-radius: 0 0 0 100%;
             opacity: 0.1;
         }
-        
+
         .form-title {
             text-align: center;
             color: var(--accent-color);
@@ -125,7 +126,7 @@
             display: inline-block;
             width: 100%;
         }
-        
+
         .form-title::after {
             content: '';
             position: absolute;
@@ -137,17 +138,17 @@
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             border-radius: 2px;
         }
-        
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
         }
-        
+
         .form-group {
             margin-bottom: 1.5rem;
         }
-        
+
         label {
             display: block;
             margin-bottom: 0.8rem;
@@ -155,8 +156,9 @@
             color: var(--secondary-color);
             font-size: 1.05rem;
         }
-        
-        input, select {
+
+        input,
+        select {
             width: 100%;
             padding: 14px;
             border: 2px solid var(--secondary-color);
@@ -167,13 +169,14 @@
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
         }
-        
-        input:focus, select:focus {
+
+        input:focus,
+        select:focus {
             outline: none;
             border-color: var(--accent-color);
             box-shadow: 0 0 0 3px rgba(148, 210, 189, 0.2);
         }
-        
+
         .start-btn {
             display: block;
             width: 100%;
@@ -191,7 +194,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .start-btn::before {
             content: '';
             position: absolute;
@@ -199,19 +202,19 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: 0.5s;
         }
-        
+
         .start-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 95, 115, 0.4);
         }
-        
+
         .start-btn:hover::before {
             left: 100%;
         }
-        
+
         .info-box {
             background: rgba(148, 210, 189, 0.08);
             border-radius: 10px;
@@ -220,7 +223,7 @@
             border-left: 4px solid var(--accent-color);
             position: relative;
         }
-        
+
         .info-box i {
             position: absolute;
             top: 15px;
@@ -229,7 +232,7 @@
             font-size: 1.5rem;
             opacity: 0.3;
         }
-        
+
         /* Exam container styles (initially hidden) */
         .exam-container {
             display: none;
@@ -242,7 +245,7 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .exam-container::before {
             content: '';
             position: absolute;
@@ -254,7 +257,7 @@
             border-radius: 100% 0 0 0;
             opacity: 0.1;
         }
-        
+
         .exam-header {
             display: flex;
             justify-content: space-between;
@@ -263,35 +266,35 @@
             padding-bottom: 1.2rem;
             border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .student-info {
             flex: 1;
         }
-        
+
         .student-info div {
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
-        
+
         .student-name {
             color: var(--accent-color);
             font-weight: 600;
             font-size: 1.2rem;
         }
-        
+
         .timer-container {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
         }
-        
+
         .exam-type {
             font-size: 0.9rem;
             color: var(--secondary-color);
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
-        
+
         .timer {
             background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
@@ -303,22 +306,30 @@
             display: flex;
             align-items: center;
         }
-        
+
         .timer i {
             margin-right: 8px;
         }
-        
+
         .timer.warning {
             background: linear-gradient(to right, var(--warning), #f59e0b);
             animation: pulse 1s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
-        
+
         .progress-container {
             width: 100%;
             height: 8px;
@@ -327,18 +338,18 @@
             margin: 1.5rem 0;
             overflow: hidden;
         }
-        
+
         .progress-bar {
             height: 100%;
             background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             border-radius: 4px;
             transition: width 0.3s ease;
         }
-        
+
         .question-container {
             margin-bottom: 2.5rem;
         }
-        
+
         .question-number {
             color: var(--accent-color);
             font-weight: 700;
@@ -347,7 +358,7 @@
             display: flex;
             align-items: center;
         }
-        
+
         .question-number span {
             background: var(--primary-color);
             color: white;
@@ -360,7 +371,7 @@
             margin-right: 10px;
             font-size: 0.9rem;
         }
-        
+
         .question-text {
             font-size: 1.15rem;
             margin-bottom: 1.8rem;
@@ -371,11 +382,11 @@
             border-left: 4px solid var(--secondary-color);
             color: #e9d8a6;
         }
-        
+
         .options-container {
             margin-left: 0.5rem;
         }
-        
+
         .option {
             margin-bottom: 1.2rem;
             display: flex;
@@ -384,12 +395,12 @@
             padding: 12px;
             border-radius: 8px;
         }
-        
+
         .option:hover {
             background: rgba(148, 210, 189, 0.1);
             transform: translateX(5px);
         }
-        
+
         .option input {
             width: auto;
             margin-right: 15px;
@@ -398,7 +409,7 @@
             height: 20px;
             background-color: transparent;
         }
-        
+
         .option label {
             margin-bottom: 0;
             cursor: pointer;
@@ -406,14 +417,14 @@
             font-weight: 500;
             color: var(--text-color);
         }
-        
+
         /* Theory section styles */
         .theory-section {
             margin-top: 2rem;
             padding-top: 1.5rem;
             border-top: 2px dashed var(--accent-color);
         }
-        
+
         .section-title {
             color: var(--accent-color);
             font-size: 1.3rem;
@@ -421,12 +432,12 @@
             display: flex;
             align-items: center;
         }
-        
+
         .section-title i {
             margin-right: 10px;
             color: var(--secondary-color);
         }
-        
+
         .theory-question {
             margin-bottom: 1.5rem;
             padding: 1.5rem;
@@ -434,14 +445,14 @@
             border-radius: 10px;
             border-left: 4px solid var(--accent-color);
         }
-        
+
         .theory-text {
             font-weight: 600;
             margin-bottom: 0.8rem;
             color: var(--text-color);
             font-size: 1.1rem;
         }
-        
+
         .theory-instruction {
             font-style: italic;
             color: #e9d8a6a6;
@@ -449,13 +460,13 @@
             padding-left: 1rem;
             border-left: 2px solid var(--accent-color);
         }
-        
+
         .nav-buttons {
             display: flex;
             justify-content: space-between;
             margin-top: 2.5rem;
         }
-        
+
         .nav-btn {
             background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
@@ -469,23 +480,23 @@
             align-items: center;
             box-shadow: 0 4px 10px rgba(10, 147, 150, 0.3);
         }
-        
+
         .nav-btn i {
             margin-right: 8px;
         }
-        
+
         .nav-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(10, 147, 150, 0.4);
         }
-        
+
         .nav-btn:disabled {
             background: #2b394d;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
         .submit-btn {
             background: var(--accent-color);
             color: var(--bg-color);
@@ -500,12 +511,12 @@
             margin: 2.5rem auto 0;
             box-shadow: 0 5px 15px rgba(148, 210, 189, 0.3);
         }
-        
+
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(148, 210, 189, 0.4);
         }
-        
+
         /* Submission confirmation */
         .confirmation-container {
             display: none;
@@ -519,7 +530,7 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .confirmation-container::before {
             content: '';
             position: absolute;
@@ -531,7 +542,7 @@
             border-radius: 0 0 0 100%;
             opacity: 0.1;
         }
-        
+
         .confirmation-title {
             color: var(--accent-color);
             margin-bottom: 1.5rem;
@@ -539,7 +550,7 @@
             position: relative;
             display: inline-block;
         }
-        
+
         .confirmation-title::after {
             content: '';
             position: absolute;
@@ -551,21 +562,21 @@
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             border-radius: 2px;
         }
-        
+
         .confirmation-message {
             margin-bottom: 1.5rem;
             font-size: 1.1rem;
             line-height: 1.7;
             color: var(--text-color);
         }
-        
+
         .btn-group {
             display: flex;
             justify-content: center;
             gap: 1.5rem;
             margin-top: 2rem;
         }
-        
+
         .confirm-btn {
             background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
@@ -577,12 +588,12 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(10, 147, 150, 0.3);
         }
-        
+
         .confirm-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(10, 147, 150, 0.4);
         }
-        
+
         .cancel-btn {
             background: linear-gradient(to right, #4b5563, #6b7280);
             color: white;
@@ -594,12 +605,12 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(107, 114, 128, 0.3);
         }
-        
+
         .cancel-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(107, 114, 128, 0.4);
         }
-        
+
         /* Results container */
         .result-container {
             display: none;
@@ -613,7 +624,7 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .result-container::before {
             content: '';
             position: absolute;
@@ -625,7 +636,7 @@
             border-radius: 0 0 0 100%;
             opacity: 0.1;
         }
-        
+
         .result-title {
             color: var(--accent-color);
             margin-bottom: 1.5rem;
@@ -633,7 +644,7 @@
             position: relative;
             display: inline-block;
         }
-        
+
         .result-title::after {
             content: '';
             position: absolute;
@@ -645,20 +656,20 @@
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             border-radius: 2px;
         }
-        
+
         .result-message {
             margin-bottom: 1.5rem;
             font-size: 1.1rem;
             line-height: 1.7;
             color: var(--text-color);
         }
-        
+
         .score-display {
             display: inline-block;
             position: relative;
             margin: 1.5rem 0;
         }
-        
+
         .score {
             font-size: 3.5rem;
             font-weight: 800;
@@ -666,7 +677,7 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .score-bg {
             position: absolute;
             top: 50%;
@@ -677,11 +688,11 @@
             color: #e9d8a64d;
             z-index: 1;
         }
-        
+
         .feedback-container {
             margin: 2.5rem 0;
         }
-        
+
         .feedback-section {
             margin-bottom: 2rem;
             padding: 1.5rem;
@@ -689,7 +700,7 @@
             background: rgba(148, 210, 189, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .feedback-title {
             color: var(--accent-color);
             font-weight: 700;
@@ -699,21 +710,21 @@
             display: flex;
             align-items: center;
         }
-        
+
         .feedback-title i {
             margin-right: 10px;
             color: var(--secondary-color);
         }
-        
+
         .feedback-text {
             line-height: 1.7;
             color: var(--text-color);
         }
-        
+
         .answers-review {
             margin-top: 2.5rem;
         }
-        
+
         .review-item {
             margin-bottom: 2rem;
             padding: 1.5rem;
@@ -722,22 +733,22 @@
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .review-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         .correct-answer {
             background-color: rgba(34, 197, 94, 0.08);
             border-left: 4px solid var(--success);
         }
-        
+
         .incorrect-answer {
             background-color: rgba(239, 68, 68, 0.08);
             border-left: 4px solid var(--danger);
         }
-        
+
         .review-question {
             font-weight: 600;
             margin-bottom: 1rem;
@@ -745,18 +756,18 @@
             display: flex;
             align-items: center;
         }
-        
+
         .review-question i {
             margin-right: 10px;
             font-size: 1.2rem;
         }
-        
+
         .review-answer {
             margin: 0.8rem 0;
             padding-left: 1.5rem;
             position: relative;
         }
-        
+
         .review-answer::before {
             content: '•';
             position: absolute;
@@ -764,21 +775,21 @@
             color: var(--secondary-color);
             font-size: 1.5rem;
         }
-        
+
         .correct {
             color: var(--success);
             font-weight: 600;
         }
-        
+
         .incorrect {
             color: var(--danger);
             font-weight: 600;
         }
-        
+
         .user-selected {
             font-weight: 600;
         }
-        
+
         .topic-tag {
             display: inline-block;
             background: var(--secondary-color);
@@ -788,14 +799,14 @@
             font-size: 0.8rem;
             margin-top: 1rem;
         }
-        
+
         .action-buttons {
             display: flex;
             justify-content: center;
             gap: 1.5rem;
             margin-top: 3rem;
         }
-        
+
         .action-btn {
             background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
             color: white;
@@ -810,24 +821,24 @@
             align-items: center;
             box-shadow: 0 5px 15px rgba(10, 147, 150, 0.3);
         }
-        
+
         .action-btn i {
             margin-right: 10px;
         }
-        
+
         .action-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(10, 147, 150, 0.4);
         }
-        
+
         .action-btn.secondary {
             background: linear-gradient(to right, #4b5563, #6b7280);
         }
-        
+
         .action-btn.secondary:hover {
             box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
         }
-        
+
         .footer {
             text-align: center;
             padding: 1.5rem;
@@ -837,59 +848,62 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: auto;
         }
-        
+
         .footer p {
             margin: 0.3rem 0;
             font-size: 0.95rem;
         }
-        
+
         .footer a {
             color: var(--accent-color);
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s ease;
         }
-        
+
         .footer a:hover {
             color: white;
             text-decoration: underline;
         }
-        
+
         /* Responsive design */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 padding: 1rem 1.5rem;
             }
-        
+
             .nav-links {
                 margin-top: 1rem;
             }
-        
+
             .back-btn {
                 position: static;
                 margin-bottom: 1rem;
             }
-        
+
             .header h1 {
                 font-size: 1.2rem;
             }
-        
-            .form-container, .exam-container {
+
+            .form-container,
+            .exam-container {
                 padding: 1.5rem;
             }
-        
+
             .nav-buttons {
                 flex-direction: column;
                 gap: 1rem;
             }
-        
-            .nav-btn, .submit-btn {
+
+            .nav-btn,
+            .submit-btn {
                 width: 100%;
             }
         }
     </style>
 </head>
+
 <body>
     <header class="header">
         <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
@@ -940,13 +954,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                    <label for="academicSession"><i class="fas fa-calendar-alt"></i> Academic Session:</label>
-                    <select id="academicSession">
-                        <option value="">-- Select Session --</option>
-                        <option value="2025_2026">2025/2026</option>
-                        <option value="2026_2027">2026/2027</option>
-                    </select>
-                </div>
+                        <label for="academicSession"><i class="fas fa-calendar-alt"></i> Academic Session:</label>
+                        <select id="academicSession">
+                            <option value="">-- Select Session --</option>
+                            <option value="2025_2026">2025/2026</option>
+                            <option value="2026_2027">2026/2027</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="exam-type">Exam Type</label>
                         <select id="exam-type" required>
@@ -957,11 +971,13 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="start-btn" id="start-exam-btn">Start Exam <i class="fas fa-play"></i></button>
+                <button type="submit" class="start-btn" id="start-exam-btn">Start Exam <i
+                        class="fas fa-play"></i></button>
             </form>
             <div class="info-box">
                 <i class="fas fa-info-circle"></i>
-                <p><strong>Heads Up:</strong> You can only take each exam once. Ensure you are ready before you begin!</p>
+                <p><strong>Heads Up:</strong> You can only take each exam once. Ensure you are ready before you begin!
+                </p>
             </div>
         </div>
 
@@ -977,7 +993,7 @@
                     <div class="timer" id="timer"><i class="far fa-clock"></i> <span>--:--</span></div>
                 </div>
             </div>
-            
+
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
@@ -992,7 +1008,8 @@
                 <button class="nav-btn" id="prev-btn" disabled><i class="fas fa-arrow-left"></i> Previous</button>
                 <button class="nav-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
             </div>
-            <button class="submit-btn" id="submit-btn" style="display: none;">Submit Exam <i class="fas fa-check"></i></button>
+            <button class="submit-btn" id="submit-btn" style="display: none;">Submit Exam <i
+                    class="fas fa-check"></i></button>
         </div>
 
         <div class="confirmation-container" id="confirmation-container">
@@ -1006,15 +1023,18 @@
 
         <div class="result-container" id="result-container">
             <h3 class="result-title">Exam Submitted!</h3>
-            <p class="result-message">Your results have been successfully recorded. You can review your performance below.</p>
+            <p class="result-message">Your results have been successfully recorded. You can review your performance
+                below.</p>
             <div class="score-display">
                 <span class="score" id="score-display">--</span>
                 <span class="score-bg" id="score-bg">--</span>
             </div>
             <p><strong>Note:</strong> Final score will include theory questions graded by the teacher.</p>
             <div class="action-buttons">
-                <button class="action-btn" onclick="goBackToHome()"><i class="fas fa-home"></i> Back to Homepage</button>
-                <button class="action-btn secondary" id="review-answers-btn"><i class="fas fa-search"></i> Review Answers</button>
+                <button class="action-btn" onclick="goBackToHome()"><i class="fas fa-home"></i> Back to
+                    Homepage</button>
+                <button class="action-btn secondary" id="review-answers-btn"><i class="fas fa-search"></i> Review
+                    Answers</button>
             </div>
             <div id="answers-review" class="answers-review" style="display: none;"></div>
         </div>
@@ -1331,14 +1351,14 @@
         // ====================
         function updateSubjectDropdown() {
             subjectSelect.disabled = !this.value;
-            
+
             if (this.value) {
                 // Clear previous options
                 subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
-                
+
                 // Add subjects based on class
                 const classKey = this.value;
-                
+
                 if (examQuestions[classKey]) {
                     const subjects = Object.keys(examQuestions[classKey]);
                     subjects.forEach(subject => {
@@ -1353,10 +1373,10 @@
 
         function checkExamAvailability() {
             const examAvailabilityRef = database.ref('examAvailability');
-            
+
             examAvailabilityRef.once('value').then((snapshot) => {
                 const availability = snapshot.val();
-                
+
                 // If exams are completely closed
                 if (!availability || !availability.isExamOpen) {
                     registrationForm.innerHTML = `
@@ -1371,10 +1391,10 @@
                 // Filter exam types dropdown based on availability
                 const availableExamTypes = availability.availableExamTypes || [];
                 const examTypeSelect = document.getElementById('examType');
-                
+
                 // Clear existing options
                 examTypeSelect.innerHTML = '<option value="">-- Select Exam Type --</option>';
-                
+
                 // Add only available exam types
                 if (availableExamTypes.includes('ca')) {
                     examTypeSelect.appendChild(new Option('Continuous Assessment', 'ca'));
@@ -1395,7 +1415,7 @@
             const examAvailabilityRef = database.ref('examAvailability');
             examAvailabilityRef.once('value').then((snapshot) => {
                 const availability = snapshot.val();
-                
+
                 if (!availability || !availability.isExamOpen) {
                     alert('Exams are no longer available. The portal has been closed by administrators.');
                     return;
@@ -1407,12 +1427,12 @@
                 const term = termSelect.value;
                 const examType = examTypeSelect.value;
                 const subject = subjectSelect.value;
-                
+
                 if (!name || !studentClass || !session || !term || !examType || !subject) {
                     alert('Please fill in all fields');
                     return;
                 }
-                
+
                 // Save exam details
                 examDetails = {
                     name,
@@ -1423,17 +1443,17 @@
                     subject,
                     timestamp: new Date().toISOString()
                 };
-                
+
                 // Get questions from our JavaScript database
-                if (examQuestions[studentClass] && 
-                    examQuestions[studentClass][subject] && 
+                if (examQuestions[studentClass] &&
+                    examQuestions[studentClass][subject] &&
                     examQuestions[studentClass][subject][examType]) {
-                    
+
                     currentQuestions = examQuestions[studentClass][subject][examType];
-                    
+
                     // Get theory questions if available
-                    if (theoryQuestions[studentClass] && 
-                        theoryQuestions[studentClass][subject] && 
+                    if (theoryQuestions[studentClass] &&
+                        theoryQuestions[studentClass][subject] &&
                         theoryQuestions[studentClass][subject][examType]) {
                         currentTheoryQuestions = theoryQuestions[studentClass][subject][examType];
                     } else {
@@ -1443,35 +1463,35 @@
                     alert('No questions available for this exam combination. Please try another subject or exam type.');
                     return;
                 }
-                
+
                 if (currentQuestions.length === 0) {
                     alert('No questions available for this exam. Please try another combination.');
                     return;
                 }
-                
+
                 userAnswers = new Array(currentQuestions.length).fill(null);
-                
+
                 // Set student info display
                 studentNameDisplay.textContent = `Student: ${name}`;
                 studentClassDisplay.textContent = `Class: ${studentClass.toUpperCase()}`;
-                
+
                 // Set exam info display
                 let examTypeText = '';
                 if (examType === 'ca') examTypeText = 'Continuous Assessment';
                 else if (examType === 'midterm') examTypeText = 'Midterm Exam';
                 else if (examType === 'exam') examTypeText = 'End of Term Exam';
-                
+
                 examTypeDisplay.textContent = `${examTypeText} - ${term} Term, ${session.replace('_', '/')}`;
-                
+
                 // Hide registration form and show exam container
                 registrationForm.style.display = 'none';
                 examContainer.style.display = 'block';
-                
+
                 // Start with first question
                 currentQuestionIndex = 0;
                 currentSection = 'objective';
                 displayQuestion();
-                
+
                 // Start timer
                 startTimer();
             }).catch((error) => {
@@ -1484,98 +1504,98 @@
             // Update navigation buttons
             prevBtn.disabled = currentQuestionIndex === 0;
             nextBtn.disabled = currentQuestionIndex === currentQuestions.length - 1 && currentSection === 'theory';
-            
+
             // Update section title
             const sectionTitle = currentSection === 'objective' ? 'Objective Questions' : 'Theory Questions';
-            
+
             // Clear previous question
             questionContainer.innerHTML = `
                 <div class="question-number">${sectionTitle} - Question ${currentQuestionIndex + 1} of ${currentQuestions.length}</div>
             `;
-            
+
             // Display current question
             const question = currentQuestions[currentQuestionIndex];
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question-text';
             questionDiv.textContent = question.question;
             questionContainer.appendChild(questionDiv);
-            
+
             // Display options for objective questions
             if (currentSection === 'objective') {
                 const optionsDiv = document.createElement('div');
                 optionsDiv.className = 'options-container';
-                
+
                 question.options.forEach((option, index) => {
                     const optionDiv = document.createElement('div');
                     optionDiv.className = 'option';
-                    
+
                     const input = document.createElement('input');
                     input.type = 'radio';
                     input.name = 'answer';
                     input.id = `option-${index}`;
                     input.value = index;
                     input.checked = userAnswers[currentQuestionIndex] === index;
-                    
+
                     input.addEventListener('change', () => {
                         userAnswers[currentQuestionIndex] = index;
                     });
-                    
+
                     const label = document.createElement('label');
                     label.htmlFor = `option-${index}`;
                     label.textContent = option;
-                    
+
                     optionDiv.appendChild(input);
                     optionDiv.appendChild(label);
                     optionsDiv.appendChild(optionDiv);
                 });
-                
+
                 questionContainer.appendChild(optionsDiv);
             }
-            
+
             // Display theory section if available and we're on the last objective question
             if (currentSection === 'objective' && currentQuestionIndex === currentQuestions.length - 1 && currentTheoryQuestions.length > 0) {
                 const theoryDiv = document.createElement('div');
                 theoryDiv.className = 'theory-section';
-                
+
                 const theoryTitle = document.createElement('div');
                 theoryTitle.className = 'section-title';
                 theoryTitle.textContent = 'Theory Section Instructions:';
                 theoryDiv.appendChild(theoryTitle);
-                
+
                 const theoryInstruction = document.createElement('div');
                 theoryInstruction.className = 'theory-instruction';
                 theoryInstruction.textContent = 'Answer the following theory questions on the provided answer sheets. You have 30 minutes for this section.';
                 theoryDiv.appendChild(theoryInstruction);
-                
+
                 questionContainer.appendChild(theoryDiv);
-                
+
                 // Change next button text if this is the last objective question
                 nextBtn.textContent = 'Start Theory Section';
             }
-            
+
             // Display theory questions if in theory section
             if (currentSection === 'theory') {
                 const theoryDiv = document.createElement('div');
                 theoryDiv.className = 'theory-section';
-                
+
                 const theoryQuestion = currentTheoryQuestions[currentQuestionIndex];
                 if (theoryQuestion) {
                     const questionDiv = document.createElement('div');
                     questionDiv.className = 'theory-question';
-                    
+
                     const questionText = document.createElement('div');
                     questionText.className = 'theory-text';
                     questionText.textContent = theoryQuestion.question;
                     questionDiv.appendChild(questionText);
-                    
+
                     const instruction = document.createElement('div');
                     instruction.className = 'theory-instruction';
                     instruction.textContent = theoryQuestion.instruction;
                     questionDiv.appendChild(instruction);
-                    
+
                     theoryDiv.appendChild(questionDiv);
                 }
-                
+
                 questionContainer.appendChild(theoryDiv);
             }
         }
@@ -1612,11 +1632,11 @@
         function startTimer() {
             timeLeft = 30 * 60; // Reset to 30 minutes
             updateTimerDisplay();
-            
+
             timerInterval = setInterval(() => {
                 timeLeft--;
                 updateTimerDisplay();
-                
+
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     submitExam();
@@ -1628,7 +1648,7 @@
             const mins = Math.floor(timeLeft / 60);
             const secs = timeLeft % 60;
             timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            
+
             // Change color when time is running low
             if (timeLeft <= 300) { // 5 minutes
                 timerDisplay.style.backgroundColor = '#e74c3c';
@@ -1647,7 +1667,7 @@
 
         function submitExam() {
             clearInterval(timerInterval);
-            
+
             // Calculate objective score
             let correct = 0;
             userAnswers.forEach((answer, index) => {
@@ -1655,9 +1675,9 @@
                     correct++;
                 }
             });
-            
+
             const objectiveScore = Math.round((correct / currentQuestions.length) * 100);
-            
+
             // Prepare exam results
             const examResults = {
                 ...examDetails,
@@ -1667,7 +1687,7 @@
                 answers: userAnswers,
                 submittedAt: new Date().toISOString()
             };
-            
+
             // Save to Firebase
             const resultsRef = database.ref('examResults');
             resultsRef.push(examResults)
@@ -1691,6 +1711,3 @@
 </body>
 
 </html>
-
-
-

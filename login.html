@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Climax Brains Academy - CBT Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1d4ed8;
+            --accent-color: #60a5fa;
+            --text-color: #f3f4f6;
+            --bg-color: #0c0a09;
+            --card-bg: #1f2937;
+            --border-color: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            background: white;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            height: 60px;
+            margin-right: 1rem;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: purple;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-links a {
+            color: purple;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 600;
+            transition: color 0.3s, transform 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            display: block;
+            margin-top: 5px;
+            right: 0;
+            background: var(--accent-color);
+            transition: width 0.4s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            left: 0;
+            background: var(--accent-color);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+            padding: 4rem 2rem;
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+            max-width: 800px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+        }
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGlow 2s infinite alternate;
+        }
+
+        .login-header p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #e5e7eb;
+        }
+
+        .role-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .role-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-color);
+        }
+
+        .role-card.student::before {
+            background: var(--accent-color);
+        }
+
+        .role-card.staff::before {
+            background: var(--secondary-color);
+        }
+
+        .role-card.admin::before {
+            background: var(--primary-color);
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .role-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .student .role-icon {
+            background: var(--accent-color);
+        }
+
+        .staff .role-icon {
+            background: var(--secondary-color);
+        }
+
+        .admin .role-icon {
+            background: var(--primary-color);
+        }
+
+        .role-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .role-description {
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-student {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .btn-student:hover {
+            background: #4f9cf9;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
+        }
+
+        .btn-staff {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-staff:hover {
+            background: #1e40af;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(29, 78, 216, 0.4);
+        }
+
+        .btn-admin {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-admin:hover {
+            background: #2563eb;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .features {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 50px;
+            color: white;
+            width: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .feature-description {
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(12, 10, 9, 0.6);
+            border-top: 1px solid var(--border-color);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .footer p {
+            margin: 0;
+            color: #9ca3af;
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .modal-description {
+            color: #d1d5db;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .role-selection {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .nav-links {
+                margin-top: 1rem;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .header h1 {
+                color: #1d4ed8;
+                font-size: 1.5rem;
+            }
+
+            .login-header h1 {
+                font-size: 2rem;
+            }
+
+            .role-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-header {
+                margin-bottom: 30px;
+            }
+
+            .role-card {
+                padding: 30px 20px;
+            }
+
+            .features {
+                padding: 30px 20px;
+            }
+        }
+
+        /* Keyframe animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes textGlow {
+            from {
+                text-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
+            }
+
+            to {
+                text-shadow: 0 0 15px rgba(59, 130, 246, 1);
+            }
+        }
+
+        .role-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .role-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .role-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="school-logo.png" alt="The Climax Model Schools Logo" class="logo">
+            <h1>The Climax Brains Academy, Ota</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="practice.html">Practice Mode</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <section class="login-section">
+            <div class="login-header">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <h1>CBT Portal for Champions 🚀</h1>
+                <p>
+                    Welcome to our Computer-Based Testing Portal. Select your role to access the appropriate login page
+                    and
+                    begin your educational journey.
+                </p>
+            </div>
+
+            <div class="role-selection">
+                <!-- Student Card -->
+                <div class="role-card student" onclick="selectRole('student')">
+                    <div class="role-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2 class="role-title">Student</h2>
+                    <p class="role-description">
+                        Access your exams, view results, and track your academic progress. Take scheduled tests and
+                        review
+                        your performance.
+                    </p>
+                    <a href="student.html" class="btn btn-student" onclick="selectRole('student'); return false;">
+                        <i class="fas fa-sign-in-alt"></i> Student Login
+                    </a>
+                </div>
+
+                <!-- Staff Card -->
+                <div class="role-card staff" onclick="selectRole('staff')">
+                    <div class="role-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h2 class="role-title">Staff</h2>
+                    <p class="role-description">
+                        Create and manage exams, questions, and view student results. Monitor academic performance and
+                        generate reports.
+                    </p>
+                    <a href="staff.html" class="btn btn-staff" onclick="selectRole('staff'); return false;">
+                        <i class="fas fa-sign-in-alt"></i> Staff Login
+                    </a>
+                </div>
+
+                <!-- Admin Card -->
+                <div class="role-card admin" onclick="selectRole('admin')">
+                    <div class="role-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2 class="role-title">Administrator</h2>
+                    <p class="role-description">
+                        Manage users, system settings, and oversee the entire CBT platform. Configure subjects, classes,
+                        and
+                        user permissions.
+                    </p>
+                    <a href="admin.html" class="btn btn-admin" onclick="selectRole('admin'); return false;">
+                        <i class="fas fa-sign-in-alt"></i> Admin Login
+                    </a>
+                </div>
+            </div>
+
+            <div class="features">
+                <h2 class="features-title">Platform Features</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-laptop-code feature-icon"></i>
+                        <h3 class="feature-title">Computer-Based Testing</h3>
+                        <p class="feature-description">Take exams online with our intuitive and secure testing platform
+                        </p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <h3 class="feature-title">Real-time Analytics</h3>
+                        <p class="feature-description">Get instant results and performance analytics after exam
+                            completion
+                        </p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt feature-icon"></i>
+                        <h3 class="feature-title">Secure & Reliable</h3>
+                        <p class="feature-description">Enterprise-grade security to protect your data and ensure exam
+                            integrity</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt feature-icon"></i>
+                        <h3 class="feature-title">Mobile Friendly</h3>
+                        <p class="feature-description">Access the platform from any device with responsive design</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 The Climax Brains Academy, Ota. All Rights Reserved.</p>
+        <p>Powered by <a href="https://digskills.netlify.app" target="_blank" rel="noopener noreferrer">DigSkills</a>
+        </p>
+    </footer>
+
+    <!-- Role Selection Modal -->
+    <div id="roleModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-info-circle modal-icon"></i>
+            <h2 class="modal-title" id="modalTitle">Redirecting to Login</h2>
+            <p class="modal-description" id="modalDescription">
+                You are being redirected to the login page. Please use your credentials to access the system.
+            </p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="confirmRedirect">Continue</button>
+                <button class="btn btn-outline" onclick="hideModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Role selection function
+        function selectRole(role) {
+            const modal = document.getElementById('roleModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const confirmBtn = document.getElementById('confirmRedirect');
+
+            // Set modal content based on selected role
+            switch (role) {
+                case 'student':
+                    modalTitle.textContent = 'Student Portal';
+                    modalDescription.textContent = 'You are being redirected to the Student Login page. Please use your admission number and password to access your account.';
+                    confirmBtn.className = 'btn btn-student';
+                    confirmBtn.innerHTML = '<i class="fas fa-user-graduate"></i> Continue to Student Login';
+                    confirmBtn.onclick = () => redirectToPage('student.html');
+                    break;
+
+                case 'staff':
+                    modalTitle.textContent = 'Staff Portal';
+                    modalDescription.textContent = 'You are being redirected to the Staff Login page. Please use your staff email and password to access the system.';
+                    confirmBtn.className = 'btn btn-staff';
+                    confirmBtn.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> Continue to Staff Login';
+                    confirmBtn.onclick = () => redirectToPage('staff.html');
+                    break;
+
+                case 'admin':
+                    modalTitle.textContent = 'Admin Portal';
+                    modalDescription.textContent = 'You are being redirected to the Admin Login page. Please use your administrator credentials to access the system.';
+                    confirmBtn.className = 'btn btn-admin';
+                    confirmBtn.innerHTML = '<i class="fas fa-user-shield"></i> Continue to Admin Login';
+                    confirmBtn.onclick = () => redirectToPage('admin.html');
+                    break;
+            }
+
+            // Show modal
+            modal.classList.add('active');
+        }
+
+        // Redirect to specific page
+        function redirectToPage(page) {
+            // Hide the modal first
+            hideModal();
+
+            // Actually redirect to the specified page
+            window.location.href = page;
+        }
+
+        // Hide modal
+        function hideModal() {
+            document.getElementById('roleModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('roleModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                hideModal();
+            }
+        });
+
+        // Add hover effects to role cards
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-10px)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                hideModal();
+            }
+        });
+
+        // Add click handlers to role cards and buttons
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('click', function () {
+                const role = this.classList.contains('student') ? 'student' :
+                    this.classList.contains('staff') ? 'staff' : 'admin';
+                selectRole(role);
+            });
+        });
+
+        // Add loading animation to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>
